@@ -8,9 +8,9 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Leaflet CSS & JS via Cloudflare CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <!-- Mapbox GL JS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
 
   <!-- Google Fonts: Cinzel & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +31,7 @@
   </script>
 
   <style>
-    /* Custom scrollbars */
+    /* Кастомный тонкий скроллбар */
     ::-webkit-scrollbar {
       width: 6px;
     }
@@ -43,42 +43,49 @@
       border-radius: 9999px;
     }
 
-    /* Marker animation */
-    .monastic-marker {
+    /* Маркеры монастырей */
+    .custom-marker {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #92400e;
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.35);
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #fef3c7;
+      cursor: pointer;
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .monastic-marker:hover, .monastic-marker.active {
-      transform: scale(1.3);
-      z-index: 1000 !important;
+    .custom-marker:hover, .custom-marker.active {
+      transform: scale(1.35);
+      background: #b45309;
+      border-color: #fef3c7;
+      z-index: 50;
     }
 
-    /* Leaflet popup customization */
-    .leaflet-popup-content-wrapper {
+    /* Попап Mapbox */
+    .mapboxgl-popup-content {
       background: #ffffff;
-      color: #1c1917;
-      border-radius: 0.75rem;
-      padding: 0;
-      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15);
-      border: 1px solid #e7ded2;
-      overflow: hidden;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 12px 24px -4px rgba(0,0,0,0.18);
+      font-family: 'Inter', sans-serif;
+      max-width: 290px;
+      border: 1px solid #ebd9c8;
     }
-    .leaflet-popup-content {
-      margin: 0;
-      line-height: 1.45;
-    }
-    .leaflet-popup-tip {
-      background: #ffffff;
-      border: 1px solid #e7ded2;
+    .mapboxgl-popup-close-button {
+      padding: 4px 8px;
+      font-size: 16px;
+      color: #78716c;
     }
   </style>
 </head>
 <body class="bg-[#f7f4ee] text-stone-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
 
   <!-- Header -->
-  <header class="bg-stone-900 text-stone-100 px-5 py-3 border-b border-stone-800 shrink-0 flex items-center justify-between z-20">
+  <header class="bg-stone-900 text-stone-100 px-5 py-3 border-b border-stone-800 shrink-0 flex items-center justify-between z-20 shadow-md">
     <div class="flex items-center space-x-3">
       <div class="w-9 h-9 rounded-full bg-amber-700 border border-amber-500/40 flex items-center justify-center text-amber-200 shrink-0">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20M7 8h10M8 15h8"/></svg>
@@ -122,14 +129,14 @@
   <!-- Desktop: Split screen (Cards on left, Map on right) -->
   <main class="flex-1 flex flex-col md:flex-row min-h-0 relative overflow-hidden">
     
-    <!-- Cards List Container -->
+    <!-- Left Column: Cards List -->
     <div class="order-1 flex-1 md:flex-initial md:w-[440px] lg:w-[480px] h-full overflow-y-auto p-3.5 space-y-3 bg-[#f7f4ee] border-b md:border-b-0 md:border-r border-stone-300">
       <div id="monks-list" class="space-y-3">
-        <!-- Rendered via JavaScript -->
+        <!-- Rendered via JS -->
       </div>
     </div>
 
-    <!-- Map Container -->
+    <!-- Right Column: Interactive Map -->
     <div class="order-2 h-[40vh] md:h-full flex-1 relative bg-stone-200">
       <div id="map" class="w-full h-full"></div>
     </div>
@@ -138,7 +145,12 @@
 
   <script>
     // -------------------------------------------------------------
-    // Comprehensive Data Array: All 13 Assyrian Fathers
+    // Mapbox Token
+    // -------------------------------------------------------------
+    const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2hlbGVuYXNoZXYiLCJhIjoiY212anhlcGk0MDlyMjJ4czk2Z20yazJvdSJ9.XDfXRGzxSVT3SIbw7dYh_Q';
+
+    // -------------------------------------------------------------
+    // Data Array: All 13 Assyrian Fathers [lng, lat]
     // -------------------------------------------------------------
     const assyrianFathers = [
       {
@@ -147,19 +159,19 @@
         monastery: "Zedazeni Monastery",
         georgianName: "იოანე ზედაზნელი",
         region: "Mtskheta-Mtianeti",
-        coordinates: [41.8711, 44.7644],
-        notable: "Leader of the 6th-century mission from Antioch/Mesopotamia. Chose Mount Zedazeni north of Mtskheta, a former pagan shrine of Zadeni. Lived in extreme asceticism with bears as companions; a miraculous spring gushed forth through his prayers.",
-        martyrdom: "Died peacefully around 573 AD after blessing his disciples to spread across Georgia. His tomb is preserved within Zedazeni Monastery Church."
+        coordinates: [44.7644, 41.8711],
+        notable: "Leader of the mission from Mesopotamia in the mid-6th century. Chose Mount Zedazeni north of Mtskheta, a former pagan shrine of Zadeni. Lived in ascetic solitude with bears as companions; a healing spring gushed forth through his prayers.",
+        martyrdom: "Died peacefully around 573 AD after blessing his disciples to establish monastic centers throughout Georgia. Buried inside Zedazeni Monastery Church."
       },
       {
         id: "davit-gareja",
         name: "Davit of Gareja (David Garejeli)",
-        monastery: "David Gareja Lavra & Cave Monasteries",
+        monastery: "David Gareja Lavra & Caves",
         georgianName: "დავით გარეჯელი",
         region: "Kakheti (Gareja Desert)",
-        coordinates: [41.4472, 45.3761],
-        notable: "Initially dwelt on Mount Mtatsminda overlooking Tbilisi. Later retreated south into the scorched, desolate semi-desert of Gareja, drinking milk from wild deer and enduring scorching drought to establish a massive cave monastic center.",
-        martyrdom: "Reposed in peace in extreme old age. Renowned for refusing to enter Jerusalem in person out of humility, carrying back three sacred stones from its gates instead."
+        coordinates: [45.3761, 41.4472],
+        notable: "Initially dwelt on Mount Mtatsminda in Tbilisi, then retreated south into the harsh desert of Gareja where he drank milk from wild deer and established a massive cave monastery.",
+        martyrdom: "Reposed in peace in extreme old age. Renowned for refusing to enter Jerusalem in person out of humility, only taking three holy stones from its gate."
       },
       {
         id: "shio-mgvime",
@@ -167,9 +179,9 @@
         monastery: "Shio-Mgvime Monastery",
         georgianName: "შიო მღვიმელი",
         region: "Mtskheta-Mtianeti",
-        coordinates: [41.8625, 44.6403],
-        notable: "Settled in a remote, waterless limestone canyon near Mtskheta. Fed miraculously by a dove; converted the local nobleman Evagrius. Thousands gathered to form Georgia's largest monastic brotherhood.",
-        martyrdom: "Spent his final 15 earthly years voluntarily sealed in a dark underground pit tomb in ceaseless contemplative prayer, where he peacefully reposed."
+        coordinates: [44.6403, 41.8625],
+        notable: "Lived in a remote limestone canyon near Mtskheta. Fed miraculously by a dove; converted local prince Evagrius. Thousands gathered to form Georgia's largest monastery.",
+        martyrdom: "Voluntarily spent the last 15 years of his earthly life sealed deep in an underground pit tomb in ceaseless contemplative prayer until his peaceful repose."
       },
       {
         id: "abibos-nekresi",
@@ -177,8 +189,8 @@
         monastery: "Nekresi Monastery",
         georgianName: "აბიბოს ნეკრესელი",
         region: "Kakheti (Alazani Valley)",
-        coordinates: [41.9723, 45.7675],
-        notable: "Consecrated Bishop of Nekresi. Zealous evangelist among Caucasian highlanders who vigorously opposed Zoroastrian Persian fire-worship, pouring water over a sacred fire altar to demonstrate that fire was merely created matter.",
+        coordinates: [45.7675, 41.9723],
+        notable: "Consecrated Bishop of Nekresi. Zealous evangelist among Caucasian highlanders who vigorously combated Zoroastrian Persian fire-worship, extinguishing a sacred fire with water.",
         martyrdom: "Martyred: Captured by the Persian Marzban, scourged, dragged through streets, and stoned to death near Rekhi. His holy relics rest in Samtavro Cathedral, Mtskheta."
       },
       {
@@ -187,9 +199,9 @@
         monastery: "Martqopi Monastery",
         georgianName: "ანტონ მარტყოფელი",
         region: "Kvemo Kartli",
-        coordinates: [41.7892, 45.0294],
-        notable: "Brought an authentic 'Image Not-Made-By-Hands' (Mandylion) of Christ on a clay tile to Georgia. Lived in secluded woods where wild deer visited him; later built a stone tower atop Mount Martqopi.",
-        martyrdom: "Lived the last 15 years of his life atop his pillar as a solitary stylite, reposing in peace around 590 AD. Buried under his pillar tower."
+        coordinates: [45.0294, 41.7892],
+        notable: "Brought an authentic 'Image Not-Made-By-Hands' (Mandylion) of Christ on a tile to Georgia. Lived in secluded woods where wild deer visited him; later climbed a stone pillar tower.",
+        martyrdom: "Spent his final 15 years in prayer atop his pillar as a solitary stylite, reposing peacefully around 590 AD. Buried under his pillar tower."
       },
       {
         id: "stepane-khirsa",
@@ -197,9 +209,9 @@
         monastery: "Khirsa Monastery of St. Stephen",
         georgianName: "სტეფანე ხირსელი",
         region: "Kakheti (Signagi)",
-        coordinates: [41.5794, 45.8944],
-        notable: "Sent by Ioane east into the fertile plains of Kakheti. Founded a basilica dedicated to the First Martyr Stephen near the Khirsa river, converting and baptizing thousands of pagans.",
-        martyrdom: "Passed away peacefully after a long life devoted to missionary work; his tomb is preserved near the altar in Khirsa Cathedral."
+        coordinates: [45.8944, 41.5794],
+        notable: "Sent east into fertile Kakheti. Built a major cathedral dedicated to Archdeacon Stephen near the Khirsa river, converting and baptizing thousands of residents.",
+        martyrdom: "Passed away peacefully after a long life devoted to missionary labor; his tomb is preserved near the altar in Khirsa Cathedral."
       },
       {
         id: "zenon-ikhalto",
@@ -207,9 +219,9 @@
         monastery: "Ikhalto Monastery & Academy",
         georgianName: "ზენონ იყალთოელი",
         region: "Kakheti (Telavi)",
-        coordinates: [41.9372, 45.3802],
-        notable: "Founded the Holy Transfiguration cloister near Telavi, laying the institutional and spiritual foundations for what later became Georgia's paramount medieval university and philosophical academy.",
-        martyrdom: "Fell asleep in the Lord peacefully in old age; enshrined within the Church of the Holy Spirit at Ikhalto."
+        coordinates: [45.3802, 41.9372],
+        notable: "Founded the Holy Transfiguration cloister near Telavi, laying spiritual foundations for what later became Georgia's paramount Academy of philosophy and science.",
+        martyrdom: "Reposed in peace of old age; enshrined within the Church of the Holy Spirit at Ikhalto."
       },
       {
         id: "ioseb-alaverdi",
@@ -217,9 +229,9 @@
         monastery: "Alaverdi Cathedral",
         georgianName: "იოსებ ალავერდელი",
         region: "Kakheti (Akhmeta)",
-        coordinates: [42.0108, 45.3670],
-        notable: "Dwelling in the wild marshy lowlands of Alaverdi, he preached the Gospel with profound meekness. His solitary hermitage later grew into the monumental 11th-century Cathedral of Alaverdi.",
-        martyrdom: "Reposed in peace in 570 AD. His tomb became an ancient center of veneration and pilgrimage across the Caucasus."
+        coordinates: [45.3670, 42.0108],
+        notable: "Settled in the wild plains of Alaverdi. Preached with profound gentleness to locals, founding the hermitage that later grew into the monumental 11th-century Alaverdi Cathedral.",
+        martyrdom: "Fell asleep in the Lord peacefully in 570 AD. His tomb became an ancient center of mass pilgrimage across the Caucasus."
       },
       {
         id: "isidor-samtavisi",
@@ -227,9 +239,9 @@
         monastery: "Samtavisi Cathedral",
         georgianName: "ისიდორე სამთავნელი",
         region: "Shida Kartli (Kaspi)",
-        coordinates: [41.9961, 44.4069],
-        notable: "Established a monastic community on the banks of the Lekhura river in central Kartli. Renowned for boundless spiritual discernment, miracles, and strict ascetic rule.",
-        martyrdom: "Died peacefully after holy ascetic struggles; buried inside Samtavisi Cathedral, renowned for its architectural stone reliefs."
+        coordinates: [44.4069, 41.9961],
+        notable: "Established a monastic community on the banks of the Lekhura river. Renowned for boundless charity, miraculous healing, and spiritual discipline.",
+        martyrdom: "Died peacefully; buried inside Samtavisi Cathedral, famed for its masterwork stone facade carvings."
       },
       {
         id: "tate-dzveli-shuamta",
@@ -237,9 +249,9 @@
         monastery: "Dzveli Shuamta Monastery",
         georgianName: "თათე ძველ-შუამთელი",
         region: "Kakheti (Gombori Pass)",
-        coordinates: [41.9125, 45.4055],
-        notable: "Preached the Faith across Kakheti before settling in the dense deciduous woods of the Tsiv-Gombori mountains, building the early Christian basilica of Shuamta ('Between the Mountains').",
-        martyrdom: "Died in tranquility surrounded by loving disciples; revered as an enduring protector of mountaineers and travelers."
+        coordinates: [45.4055, 41.9125],
+        notable: "Preached the Gospel across Kakheti before settling in thick deciduous woods at the foot of Tsiv-Gombori mountains, building the early Christian basilica of Shuamta.",
+        martyrdom: "Died in tranquility surrounded by loving disciples; revered as a protector of mountaineers and travelers."
       },
       {
         id: "mikhail-ulumbo",
@@ -247,5 +259,213 @@
         monastery: "Ulumbo Monastery",
         georgianName: "მიქაელ ულუმბოელი",
         region: "Shida Kartli (Khashuri)",
-        coordinates: [42.0520, 43.6820],
-        notable: "Vigorous preacher of Christian doctrine who founded a spiritual center on Mount Ulumbo, successfully overturning lingering pagan solar and tree-worshiping practices in western
+        coordinates: [43.6820, 42.0520],
+        notable: "Vigorous preacher of orthodox Christian doctrine who established a flourishing spiritual center at Mount Ulumbo, overturning remaining pagan practices.",
+        martyrdom: "Reposed in peace after establishing an influential monastic cloister; venerated for spiritual endurance."
+      },
+      {
+        id: "piros-breti",
+        name: "Piros of Breti (Pyrrhus)",
+        monastery: "Breti Monastery",
+        georgianName: "პიროზ ბრეთელი",
+        region: "Shida Kartli (Kareli)",
+        coordinates: [43.9161, 42.0633],
+        notable: "Founded a monastic cloister at Breti near the Mtkvari valley. Renowned for unceasing empathy toward leprosy patients and the poor.",
+        martyrdom: "Died peacefully after holy ascetic struggles; buried inside the Mother of God Church at Breti Monastery."
+      },
+      {
+        id: "elise-tserovani",
+        name: "Elise of Tserovani (Elisha)",
+        monastery: "Tserovani Church & Hermitage",
+        georgianName: "ელისე წეროვნელი",
+        region: "Mtskheta-Mtianeti",
+        coordinates: [44.6883, 41.8792],
+        notable: "Established solitary prayer cells and churches in the valleys near Tserovani and Mtskheta, confirming local farmers in piety.",
+        martyrdom: "Lived to extreme old age and passed into eternal rest in peace at his retreat in Tserovani."
+      }
+    ];
+
+    let map;
+    const markers = {};
+    const sidebar = document.getElementById('monks-list');
+    const counter = document.getElementById('counter');
+    const searchInput = document.getElementById('search-input');
+    const resetBtn = document.getElementById('reset-btn');
+
+    function renderCards(list) {
+      if (!sidebar) return;
+      sidebar.innerHTML = '';
+
+      if (list.length === 0) {
+        sidebar.innerHTML = '<p class="text-center text-xs text-stone-500 py-8">No matching monks or monasteries found.</p>';
+        if (counter) counter.innerText = `0 of ${assyrianFathers.length} Monasteries`;
+        return;
+      }
+
+      list.forEach(father => {
+        const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
+        const card = document.createElement('article');
+        card.id = `card-${father.id}`;
+        card.className = "p-3.5 rounded-xl border bg-white cursor-pointer shadow-sm hover:shadow-md hover:border-amber-500 transition duration-150 border-stone-200/90 text-xs";
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isMartyr ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-stone-100 text-stone-700 border border-stone-200'}">
+                  ${father.region}
+                </span>
+                ${isMartyr ? '<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-800">Hieromartyr</span>' : ''}
+              </div>
+              <h2 class="font-serif font-bold text-sm text-stone-900 transition">
+                ${father.name}
+              </h2>
+              <div class="text-[11px] text-stone-500 italic mb-2">
+                <span>${father.georgianName}</span> • <span class="font-semibold text-amber-800 not-italic">${father.monastery}</span>
+              </div>
+            </div>
+            <button class="p-1.5 rounded-lg bg-stone-100 text-stone-500 hover:text-amber-800 shrink-0" title="Fly to location">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </button>
+          </div>
+          <p class="text-stone-600 leading-relaxed mt-1 mb-2">
+            ${father.notable}
+          </p>
+          <div class="pt-2 border-t border-stone-100 text-[11px] ${isMartyr ? 'text-red-900 font-medium' : 'text-stone-500'}">
+            <strong>Repose / Martyrdom:</strong> ${father.martyrdom}
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          selectFather(father.id, true);
+        });
+
+        sidebar.appendChild(card);
+      });
+
+      if (counter) counter.innerText = `${list.length} of ${assyrianFathers.length} Monasteries`;
+    }
+
+    function initMapbox() {
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/outdoors-v12',
+        center: [44.95, 41.85],
+        zoom: 8.5
+      });
+
+      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      assyrianFathers.forEach(father => {
+        const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
+        const el = document.createElement('div');
+        el.className = 'custom-marker';
+        el.id = `marker-${father.id}`;
+        if (isMartyr) {
+          el.style.backgroundColor = '#991b1b';
+        }
+        el.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M7 8h10M8 15h8"/></svg>`;
+
+        const popup = new mapboxgl.Popup({ offset: 20 }).setHTML(`
+          <div class="text-stone-800 text-xs">
+            <div class="flex items-center gap-1.5 mb-1">
+              <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isMartyr ? 'bg-red-100 text-red-800' : 'bg-stone-100 text-stone-700'}">${father.region}</span>
+              ${isMartyr ? '<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-800 text-white">Hieromartyr</span>' : ''}
+            </div>
+            <h3 class="font-serif font-bold text-sm text-stone-900 leading-tight mb-0.5">${father.name}</h3>
+            <div class="text-[11px] text-stone-500 italic mb-2">${father.georgianName} • <span class="font-semibold text-amber-900 not-italic">${father.monastery}</span></div>
+            <p class="text-stone-600 leading-relaxed mb-2">${father.notable}</p>
+            <div class="pt-2 border-t border-stone-200 text-[10px] ${isMartyr ? 'text-red-800 font-medium' : 'text-stone-500'}">
+              <strong>Repose:</strong> ${father.martyrdom}
+            </div>
+          </div>
+        `);
+
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat(father.coordinates)
+          .setPopup(popup)
+          .addTo(map);
+
+        el.addEventListener('click', () => {
+          selectFather(father.id, false);
+        });
+
+        markers[father.id] = { marker, popup, coords: father.coordinates };
+      });
+    }
+
+    function selectFather(id, shouldFly = true) {
+      const father = assyrianFathers.find(f => f.id === id);
+      if (!father) return;
+
+      document.querySelectorAll('#monks-list article').forEach(el => {
+        el.classList.remove('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+      });
+      const activeCard = document.getElementById(`card-${id}`);
+      if (activeCard) {
+        activeCard.classList.add('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      document.querySelectorAll('.custom-marker').forEach(m => m.classList.remove('active'));
+      const activeMarker = document.getElementById(`marker-${id}`);
+      if (activeMarker) activeMarker.classList.add('active');
+
+      if (map && markers[id]) {
+        if (shouldFly) {
+          map.flyTo({
+            center: father.coordinates,
+            zoom: 12.5,
+            duration: 1400,
+            essential: true
+          });
+        }
+        markers[id].marker.togglePopup();
+      }
+    }
+
+    function resetView() {
+      if (!map) return;
+      map.flyTo({ center: [44.95, 41.85], zoom: 8.5, duration: 1000 });
+      document.querySelectorAll('#monks-list article').forEach(el => {
+        el.classList.remove('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+      });
+      document.querySelectorAll('.custom-marker').forEach(m => m.classList.remove('active'));
+    }
+
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      const filtered = assyrianFathers.filter(f => 
+        f.name.toLowerCase().includes(q) ||
+        f.monastery.toLowerCase().includes(q) ||
+        f.georgianName.toLowerCase().includes(q) ||
+        f.region.toLowerCase().includes(q) ||
+        f.notable.toLowerCase().includes(q) ||
+        f.martyrdom.toLowerCase().includes(q)
+      );
+
+      renderCards(filtered);
+
+      assyrianFathers.forEach(f => {
+        const item = markers[f.id];
+        if (!item) return;
+        const matches = filtered.some(match => match.id === f.id);
+        item.marker.getElement().style.display = matches ? 'flex' : 'none';
+      });
+    }
+
+    // Direct execution
+    renderCards(assyrianFathers);
+    initMapbox();
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+    }
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetView);
+    }
+  </script>
+</body>
+</html>
