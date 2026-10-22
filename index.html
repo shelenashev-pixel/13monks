@@ -3,194 +3,249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>13 Assyrian Fathers in Georgia</title>
+  <title>13 Assyrian Monks in Georgia</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS & JS via Cloudflare CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+  <!-- Google Fonts: Cinzel & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Cinzel', 'Georgia', 'serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f7f4ee;
-      color: #292524;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1ede4;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbbba6;
+      border-radius: 9999px;
     }
 
-    header {
-      background: #1c1917;
-      color: #f5f5f4;
-      padding: 12px 20px;
+    /* Marker animation */
+    .monastic-marker {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #292524;
-      flex-shrink: 0;
-      z-index: 20;
+      justify-content: center;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .badge {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: #92400e; display: flex; align-items: center; justify-content: center;
-      color: #fef3c7; flex-shrink: 0;
+    .monastic-marker:hover, .monastic-marker.active {
+      transform: scale(1.3);
+      z-index: 1000 !important;
     }
-    h1 {
-      font-size: 1.15rem; font-weight: 700; color: #fef3c7; letter-spacing: 0.5px;
-    }
-    .sub { font-size: 0.75rem; color: #a8a29e; }
 
-    .filter-bar {
-      background: #eee8dc; padding: 8px 16px; display: flex; align-items: center;
-      gap: 12px; border-bottom: 1px solid #d6cfbf; flex-shrink: 0;
-    }
-    .search-wrap { position: relative; flex: 1; max-width: 360px; }
-    .search-wrap input {
-      width: 100%; padding: 6px 12px 6px 32px; border-radius: 6px;
-      border: 1px solid #c7beab; background: #ffffff; font-size: 0.82rem; outline: none;
-    }
-    .search-wrap input:focus { border-color: #b45309; }
-    .search-wrap svg { position: absolute; left: 10px; top: 8px; color: #78716c; }
-    .btn {
-      background: #ded7c6; border: 1px solid #c7beab; padding: 6px 12px;
-      border-radius: 6px; font-size: 0.78rem; cursor: pointer; color: #44403c; font-weight: 500;
-    }
-    .btn:hover { background: #cfc6b2; }
-    .counter { font-size: 0.78rem; color: #78716c; margin-left: auto; }
-
-    main { flex: 1; display: flex; min-height: 0; position: relative; }
-    @media (max-width: 768px) { main { flex-direction: column-reverse; } }
-
-    #sidebar {
-      width: 440px; height: 100%; overflow-y: auto; padding: 12px;
-      display: flex; flex-direction: column; gap: 10px; background: #f7f4ee;
-      border-right: 1px solid #d6cfbf; flex-shrink: 0;
-    }
-    @media (max-width: 768px) { #sidebar { width: 100%; height: 50%; border-right: none; border-top: 1px solid #d6cfbf; } }
-
-    .card {
-      background: #ffffff; border: 1px solid #e2dac9; border-radius: 8px;
-      padding: 12px; cursor: pointer; transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .card:hover { border-color: #d97706; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
-    .card.active { border-color: #b45309; box-shadow: 0 0 0 2px #b45309; background: #fffcf7; }
-    .tag {
-      display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; background: #f5f0e6; color: #78350f; margin-bottom: 4px;
-    }
-    .card-title { font-size: 0.95rem; font-weight: 700; color: #1c1917; margin-bottom: 2px; }
-    .card-subtitle { font-size: 0.75rem; color: #78716c; margin-bottom: 6px; }
-    .card-subtitle strong { color: #92400e; font-weight: 600; }
-    .card-desc { font-size: 0.78rem; line-height: 1.45; color: #57534e; }
-
-    #map-wrap {
-      flex: 1; height: 100%; min-width: 0; position: relative; background: #e8e3d8;
+    /* Leaflet popup customization */
+    .leaflet-popup-content-wrapper {
+      background: #ffffff;
+      color: #1c1917;
+      border-radius: 0.75rem;
+      padding: 0;
+      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.15);
+      border: 1px solid #e7ded2;
       overflow: hidden;
     }
-    @media (max-width: 768px) { #map-wrap { height: 50%; width: 100%; } }
-
-    #svg-map { width: 100%; height: 100%; display: block; }
-    .map-land { fill: #ded8cb; stroke: #c2baa8; stroke-width: 2; }
-    .map-water { fill: #c7d5de; stroke: #b0c2cb; }
-    
-    .pin {
-      cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transform-box: fill-box; transform-origin: center center;
+    .leaflet-popup-content {
+      margin: 0;
+      line-height: 1.45;
     }
-    .pin:hover, .pin.active { transform: scale(1.35); }
-    .pin-body { fill: #92400e; stroke: #ffffff; stroke-width: 2; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3)); }
-    .pin.active .pin-body { fill: #b45309; stroke: #fef3c7; }
-    .pin-label {
-      font-size: 11px; font-weight: bold; fill: #292524; paint-order: stroke;
-      stroke: #ffffff; stroke-width: 3px; stroke-linecap: round; stroke-linejoin: round;
-      pointer-events: none;
+    .leaflet-popup-tip {
+      background: #ffffff;
+      border: 1px solid #e7ded2;
     }
-
-    .info-overlay {
-      position: absolute; bottom: 20px; right: 20px; background: rgba(255,255,255,0.96);
-      border: 1px solid #d6cfbf; border-radius: 8px; padding: 14px; max-width: 320px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-size: 0.8rem; display: none;
-      backdrop-filter: blur(4px); z-index: 30;
-    }
-    .info-overlay.visible { display: block; }
   </style>
 </head>
-<body>
+<body class="bg-[#f7f4ee] text-stone-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
 
-  <header>
-    <div class="brand">
-      <div class="badge">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20M7 8h10M8 15h8"/></svg>
+  <!-- Header -->
+  <header class="bg-stone-900 text-stone-100 px-5 py-3 border-b border-stone-800 shrink-0 flex items-center justify-between z-20">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-full bg-amber-700 border border-amber-500/40 flex items-center justify-center text-amber-200 shrink-0">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v20M7 8h10M8 15h8"/></svg>
       </div>
       <div>
-        <h1>13 Assyrian Fathers in Georgia</h1>
-        <p class="sub">6th Century Monastic Founders • Eastern Georgia</p>
+        <h1 class="font-serif text-base md:text-lg font-bold tracking-wide text-amber-100">13 Assyrian Monks in Georgia</h1>
+        <p class="text-[11px] text-stone-400">6th Century Christian Missionaries & Monastic Founders</p>
       </div>
+    </div>
+    <div class="hidden sm:flex items-center space-x-2 text-xs text-amber-200/80 bg-stone-800 px-3 py-1.5 rounded-full border border-stone-700">
+      <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      <span>Kartli & Kakheti Wilderness</span>
     </div>
   </header>
 
-  <div class="filter-bar">
-    <div class="search-wrap">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="search-input" type="text" placeholder="Filter by Father, Monastery, Region..." oninput="handleFilter(this.value)" />
+  <!-- Filter & Search Bar -->
+  <section class="bg-[#eee8dc] px-4 py-2 border-b border-stone-300 flex flex-wrap gap-2 items-center justify-between text-xs shrink-0 z-20">
+    <div class="relative flex-1 min-w-[200px] max-w-sm">
+      <input 
+        id="search-input" 
+        type="text" 
+        placeholder="Filter by monk, monastery, or region..." 
+        class="w-full bg-white pl-8 pr-3 py-1.5 rounded-md border border-stone-300 focus:outline-none focus:ring-1 focus:ring-amber-600 text-stone-700 shadow-sm"
+      />
+      <svg class="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
     </div>
-    <button class="btn" onclick="resetMap()">Show All Monasteries</button>
-    <span id="counter" class="counter">13 Monasteries</span>
-  </div>
+    <div class="flex items-center gap-2">
+      <button 
+        id="reset-btn"
+        class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-200/90 hover:bg-stone-300 text-stone-700 font-medium transition cursor-pointer text-xs"
+      >
+        <svg class="w-3.5 h-3.5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>Reset View</span>
+      </button>
+      <span id="counter" class="text-stone-500 font-medium text-xs">13 Monasteries</span>
+    </div>
+  </section>
 
-  <main>
-    <!-- Карточки встроены прямо в HTML -->
-    <div id="sidebar">
-      <div class="card" id="card-ioane-zedazeni" onclick="pick('ioane-zedazeni', 520, 440)">
-        <span class="tag">Mtskheta-Mtianeti</span>
-        <div class="card-title">Ioane of Zedazeni</div>
-        <div class="card-subtitle">იოანე ზედაზნელი • <strong>Zedazeni Monastery</strong></div>
-        <div class="card-desc">Leader of the mission from Mesopotamia in the mid-6th century. Chose Zedazeni mountain north of Mtskheta. Lived in ascetic solitude with bears as companions.</div>
+  <!-- Main Content Layout -->
+  <!-- Mobile: Cards on top (flex-1), Map on bottom (40vh) -->
+  <!-- Desktop: Split screen (Cards on left, Map on right) -->
+  <main class="flex-1 flex flex-col md:flex-row min-h-0 relative overflow-hidden">
+    
+    <!-- Cards List Container -->
+    <div class="order-1 flex-1 md:flex-initial md:w-[440px] lg:w-[480px] h-full overflow-y-auto p-3.5 space-y-3 bg-[#f7f4ee] border-b md:border-b-0 md:border-r border-stone-300">
+      <div id="monks-list" class="space-y-3">
+        <!-- Rendered via JavaScript -->
       </div>
+    </div>
 
-      <div class="card" id="card-davit-gareja" onclick="pick('davit-gareja', 690, 560)">
-        <span class="tag">Kakheti (Gareja Desert)</span>
-        <div class="card-title">Davit of Gareja</div>
-        <div class="card-subtitle">დავით გარეჯელი • <strong>David Gareja Lavra</strong></div>
-        <div class="card-desc">Initially dwelt on Mount Mtatsminda, then retreated south into the harsh desert of Gareja where he lived in caves and drank milk from wild deer.</div>
-      </div>
+    <!-- Map Container -->
+    <div class="order-2 h-[40vh] md:h-full flex-1 relative bg-stone-200">
+      <div id="map" class="w-full h-full"></div>
+    </div>
 
-      <div class="card" id="card-shio-mgvime" onclick="pick('shio-mgvime', 480, 450)">
-        <span class="tag">Mtskheta-Mtianeti</span>
-        <div class="card-title">Shio of Mgvime</div>
-        <div class="card-subtitle">შიო მღვიმელი • <strong>Shio-Mgvime Monastery</strong></div>
-        <div class="card-desc">Lived in a remote limestone canyon near Mtskheta. Thousands gathered to form a monastery under his guidance; spent his final 15 years in a deep pit tomb.</div>
-      </div>
+  </main>
 
-      <div class="card" id="card-abibos-nekresi" onclick="pick('abibos-nekresi', 810, 350)">
-        <span class="tag">Kakheti (Alazani Valley)</span>
-        <div class="card-title">Abibos of Nekresi</div>
-        <div class="card-subtitle">აბიბოს ნეკრესელი • <strong>Nekresi Monastery</strong></div>
-        <div class="card-desc">Bishop of Nekresi. Preached among mountain tribes and extinguished a Zoroastrian sacred fire altar to show it had no divine power. Crowned with martyrdom.</div>
-      </div>
-
-      <div class="card" id="card-anton-martqopi" onclick="pick('anton-martqopi', 600, 490)">
-        <span class="tag">Kvemo Kartli</span>
-        <div class="card-title">Anton of Martqopi</div>
-        <div class="card-subtitle">ანტონ მარტყოფელი • <strong>Martqopi Monastery</strong></div>
-        <div class="card-desc">Brought an authentic image of Christ on a tile (Mandylion) to Georgia. Later climbed a tall stone tower to spend 15 years in unbroken prayer as a stylite.</div>
-      </div>
-
-      <div class="card" id="card-stepane-khirsa" onclick="pick('stepane-khirsa', 840, 480)">
-        <span class="tag">Kakheti (Signagi)</span>
-        <div class="card-title">Stephane of Khirsa</div>
-        <div class="card-subtitle">სტეფანე ხირსელი • <strong>Khirsa Monastery</strong></div>
-        <div class="card-desc">Sent east into fertile Kakheti to preach Christ near the Khirsa river, where he established a major basilica.</div>
-      </div>
-
-      <div class="card" id="card-zenon-ikhalto" onclick="pick('zenon-ikhalto', 720, 370)">
-        <span class="tag">Kakheti (Telavi)</span>
-        <div class="card-title">Zenon of Ikhalto</div>
-        <div class="card-subtitle">ზენონ იყალთოელი • <strong>Ikhalto Monastery</strong></div>
-        <div class="card-desc">Founded the Holy Transfiguration cloister near Telavi, which centuries later became Georgia's famous Academy of philosophy and science.</div>
-      </div>
-
-      <div class="card" id="card-ioseb-alaverdi" onclick="pick('ioseb-alaverdi', 700, 330)">
-        <span class="tag">Kakheti (Akhmeta)</span>
-        <div class="card-title">Ioseb of Alaverdi</div>
-        <div class="card-subtitle">იოსებ ალავერდელი • <strong>Alaverdi Cathedral</strong></div>
-        <div class="card-desc">Settled in the wild plains of Alaverdi. Preached to locals, founding the hermitage that later grew into the monumental 11th-century Alaverdi Cathedral
+  <script>
+    // -------------------------------------------------------------
+    // Comprehensive Data Array: All 13 Assyrian Fathers
+    // -------------------------------------------------------------
+    const assyrianFathers = [
+      {
+        id: "ioane-zedazeni",
+        name: "Ioane of Zedazeni (John)",
+        monastery: "Zedazeni Monastery",
+        georgianName: "იოანე ზედაზნელი",
+        region: "Mtskheta-Mtianeti",
+        coordinates: [41.8711, 44.7644],
+        notable: "Leader of the 6th-century mission from Antioch/Mesopotamia. Chose Mount Zedazeni north of Mtskheta, a former pagan shrine of Zadeni. Lived in extreme asceticism with bears as companions; a miraculous spring gushed forth through his prayers.",
+        martyrdom: "Died peacefully around 573 AD after blessing his disciples to spread across Georgia. His tomb is preserved within Zedazeni Monastery Church."
+      },
+      {
+        id: "davit-gareja",
+        name: "Davit of Gareja (David Garejeli)",
+        monastery: "David Gareja Lavra & Cave Monasteries",
+        georgianName: "დავით გარეჯელი",
+        region: "Kakheti (Gareja Desert)",
+        coordinates: [41.4472, 45.3761],
+        notable: "Initially dwelt on Mount Mtatsminda overlooking Tbilisi. Later retreated south into the scorched, desolate semi-desert of Gareja, drinking milk from wild deer and enduring scorching drought to establish a massive cave monastic center.",
+        martyrdom: "Reposed in peace in extreme old age. Renowned for refusing to enter Jerusalem in person out of humility, carrying back three sacred stones from its gates instead."
+      },
+      {
+        id: "shio-mgvime",
+        name: "Shio of Mgvime (Shio-Mgvimeli)",
+        monastery: "Shio-Mgvime Monastery",
+        georgianName: "შიო მღვიმელი",
+        region: "Mtskheta-Mtianeti",
+        coordinates: [41.8625, 44.6403],
+        notable: "Settled in a remote, waterless limestone canyon near Mtskheta. Fed miraculously by a dove; converted the local nobleman Evagrius. Thousands gathered to form Georgia's largest monastic brotherhood.",
+        martyrdom: "Spent his final 15 earthly years voluntarily sealed in a dark underground pit tomb in ceaseless contemplative prayer, where he peacefully reposed."
+      },
+      {
+        id: "abibos-nekresi",
+        name: "Abibos of Nekresi (Abibus)",
+        monastery: "Nekresi Monastery",
+        georgianName: "აბიბოს ნეკრესელი",
+        region: "Kakheti (Alazani Valley)",
+        coordinates: [41.9723, 45.7675],
+        notable: "Consecrated Bishop of Nekresi. Zealous evangelist among Caucasian highlanders who vigorously opposed Zoroastrian Persian fire-worship, pouring water over a sacred fire altar to demonstrate that fire was merely created matter.",
+        martyrdom: "Martyred: Captured by the Persian Marzban, scourged, dragged through streets, and stoned to death near Rekhi. His holy relics rest in Samtavro Cathedral, Mtskheta."
+      },
+      {
+        id: "anton-martqopi",
+        name: "Anton of Martqopi (Anthony)",
+        monastery: "Martqopi Monastery",
+        georgianName: "ანტონ მარტყოფელი",
+        region: "Kvemo Kartli",
+        coordinates: [41.7892, 45.0294],
+        notable: "Brought an authentic 'Image Not-Made-By-Hands' (Mandylion) of Christ on a clay tile to Georgia. Lived in secluded woods where wild deer visited him; later built a stone tower atop Mount Martqopi.",
+        martyrdom: "Lived the last 15 years of his life atop his pillar as a solitary stylite, reposing in peace around 590 AD. Buried under his pillar tower."
+      },
+      {
+        id: "stepane-khirsa",
+        name: "Stephane of Khirsa (Stephen)",
+        monastery: "Khirsa Monastery of St. Stephen",
+        georgianName: "სტეფანე ხირსელი",
+        region: "Kakheti (Signagi)",
+        coordinates: [41.5794, 45.8944],
+        notable: "Sent by Ioane east into the fertile plains of Kakheti. Founded a basilica dedicated to the First Martyr Stephen near the Khirsa river, converting and baptizing thousands of pagans.",
+        martyrdom: "Passed away peacefully after a long life devoted to missionary work; his tomb is preserved near the altar in Khirsa Cathedral."
+      },
+      {
+        id: "zenon-ikhalto",
+        name: "Zenon of Ikhalto (Zeno)",
+        monastery: "Ikhalto Monastery & Academy",
+        georgianName: "ზენონ იყალთოელი",
+        region: "Kakheti (Telavi)",
+        coordinates: [41.9372, 45.3802],
+        notable: "Founded the Holy Transfiguration cloister near Telavi, laying the institutional and spiritual foundations for what later became Georgia's paramount medieval university and philosophical academy.",
+        martyrdom: "Fell asleep in the Lord peacefully in old age; enshrined within the Church of the Holy Spirit at Ikhalto."
+      },
+      {
+        id: "ioseb-alaverdi",
+        name: "Ioseb of Alaverdi (Joseph)",
+        monastery: "Alaverdi Cathedral",
+        georgianName: "იოსებ ალავერდელი",
+        region: "Kakheti (Akhmeta)",
+        coordinates: [42.0108, 45.3670],
+        notable: "Dwelling in the wild marshy lowlands of Alaverdi, he preached the Gospel with profound meekness. His solitary hermitage later grew into the monumental 11th-century Cathedral of Alaverdi.",
+        martyrdom: "Reposed in peace in 570 AD. His tomb became an ancient center of veneration and pilgrimage across the Caucasus."
+      },
+      {
+        id: "isidor-samtavisi",
+        name: "Isidore of Samtavisi",
+        monastery: "Samtavisi Cathedral",
+        georgianName: "ისიდორე სამთავნელი",
+        region: "Shida Kartli (Kaspi)",
+        coordinates: [41.9961, 44.4069],
+        notable: "Established a monastic community on the banks of the Lekhura river in central Kartli. Renowned for boundless spiritual discernment, miracles, and strict ascetic rule.",
+        martyrdom: "Died peacefully after holy ascetic struggles; buried inside Samtavisi Cathedral, renowned for its architectural stone reliefs."
+      },
+      {
+        id: "tate-dzveli-shuamta",
+        name: "Tate of Shuamta (Thaddaeus)",
+        monastery: "Dzveli Shuamta Monastery",
+        georgianName: "თათე ძველ-შუამთელი",
+        region: "Kakheti (Gombori Pass)",
+        coordinates: [41.9125, 45.4055],
+        notable: "Preached the Faith across Kakheti before settling in the dense deciduous woods of the Tsiv-Gombori mountains, building the early Christian basilica of Shuamta ('Between the Mountains').",
+        martyrdom: "Died in tranquility surrounded by loving disciples; revered as an enduring protector of mountaineers and travelers."
+      },
+      {
+        id: "mikhail-ulumbo",
+        name: "Mikhail of Ulumbo (Michael)",
+        monastery: "Ulumbo Monastery",
+        georgianName: "მიქაელ ულუმბოელი",
+        region: "Shida Kartli (Khashuri)",
+        coordinates: [42.0520, 43.6820],
+        notable: "Vigorous preacher of Christian doctrine who founded a spiritual center on Mount Ulumbo, successfully overturning lingering pagan solar and tree-worshiping practices in western
