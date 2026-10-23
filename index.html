@@ -37,8 +37,8 @@
     ::-webkit-scrollbar-thumb { background: #cbbba6; border-radius: 9999px; }
 
     .custom-marker {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #92400e; border: 2.5px solid #ffffff;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #92400e; border: 2px solid #ffffff;
       box-shadow: 0 4px 10px rgba(0,0,0,0.35); display: flex;
       align-items: center; justify-content: center; color: #fef3c7;
       cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -94,22 +94,24 @@
   </section>
 
   <!-- Main Content Layout -->
+  <!-- Mobile: Top 60% cards scroll, Bottom 40% map -->
+  <!-- Desktop: Left 440px cards scroll, Right full map -->
   <main class="flex-1 flex flex-col md:flex-row min-h-0 relative overflow-hidden">
-    <!-- Left Column: Cards List -->
-    <div class="order-1 flex-1 md:flex-initial md:w-[440px] lg:w-[480px] h-full overflow-y-auto p-3.5 space-y-3 bg-[#f7f4ee] border-b md:border-b-0 md:border-r border-stone-300">
+    <!-- Cards List Container -->
+    <div class="order-1 h-[60%] md:h-full md:w-[440px] lg:w-[480px] shrink-0 overflow-y-auto p-3.5 space-y-3 bg-[#f7f4ee] border-b md:border-b-0 md:border-r border-stone-300">
       <div id="monks-list" class="space-y-3"></div>
     </div>
 
-    <!-- Right Column: Interactive Map -->
-    <div class="order-2 h-[40vh] md:h-full flex-1 relative bg-stone-200">
-      <div id="map" class="w-full h-full"></div>
+    <!-- Map Container -->
+    <div class="order-2 h-[40%] md:h-full flex-1 relative bg-stone-200 min-h-0">
+      <div id="map" class="absolute inset-0 w-full h-full"></div>
     </div>
   </main>
 
   <script>
     const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2hlbGVuYXNoZXYiLCJhIjoiY212anhlcGk0MDlyMjJ4czk2Z20yazJvdSJ9.XDfXRGzxSVT3SIbw7dYh_Q';
 
-    let assyrianFathers = [
+    const assyrianFathers = [
       {
         id: "ioane-zedazeni",
         name: "Ioane of Zedazeni",
@@ -283,7 +285,7 @@
       sidebar.innerHTML = '';
 
       const counter = document.getElementById('counter');
-      if (counter) counter.innerText = `${list.length} of ${assyrianFathers.length} Monasteries`;
+      if (counter) counter.innerText = `${list.length} Monasteries`;
 
       list.forEach(father => {
         const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
@@ -347,7 +349,7 @@
 
         const popup = new mapboxgl.Popup({ offset: 20, closeOnClick: true }).setHTML(`
           <div>
-            <div style="height: 130px; width: 100%; position: relative; background: #292524;">
+            <div style="height: 125px; width: 100%; position: relative; background: #292524;">
               <img src="${father.imageUrl}" alt="${father.monastery}" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
               <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);"></div>
               <span style="position: absolute; bottom: 8px; left: 10px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.95); color: #1c1917;">
@@ -381,6 +383,10 @@
 
         markers[father.id] = { marker, popup, coords: father.coordinates };
       });
+
+      // Пересчёт размеров при смене экрана
+      setTimeout(() => { map.resize(); }, 200);
+      window.addEventListener('resize', () => { map.resize(); });
     }
 
     function selectFather(id, shouldFly = true) {
@@ -449,33 +455,14 @@
     }
 
     // Запуск приложения
-    function startApp() {
-      renderCards(assyrianFathers);
-      initMapbox();
+    renderCards(assyrianFathers);
+    initMapbox();
 
-      const searchInput = document.getElementById('search-input');
-      if (searchInput) searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
 
-      const resetBtn = document.getElementById('reset-btn');
-      if (resetBtn) resetBtn.addEventListener('click', resetView);
-
-      // Фоновое обновление из monks.json (если файл доступен)
-      fetch('data/monks.json')
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-          if (Array.isArray(data) && data.length > 0) {
-            assyrianFathers = data;
-            renderCards(assyrianFathers);
-          }
-        })
-        .catch(() => {});
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startApp);
-    } else {
-      startApp();
-    }
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) resetBtn.addEventListener('click', resetView);
   </script>
 </body>
 </html>
