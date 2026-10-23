@@ -15,7 +15,7 @@
 
   <!-- Google Fonts: Cinzel & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <script>
@@ -107,8 +107,6 @@
   </main>
 
   <script>
-    console.log("App script starting...");
-
     const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2hlbGVuYXNoZXYiLCJhIjoiY212anhlcGk0MDlyMjJ4czk2Z20yazJvdSJ9.XDfXRGzxSVT3SIbw7dYh_Q';
 
     let assyrianFathers = [
@@ -252,4 +250,232 @@
         region: "Shida Kartli (Kareli)",
         coordinates: [43.9161, 42.0633],
         imageUrl: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=700&q=80",
-        gmapsUrl: "
+        gmapsUrl: "https://www.google.com/maps/search/?api=1&query=Breti+Monastery+Georgia",
+        notable: "Founded a monastic cloister at Breti. Renowned for unceasing empathy toward leprosy patients and the poor.",
+        martyrdom: "Died peacefully; buried inside the Mother of God Church at Breti Monastery."
+      },
+      {
+        id: "elise-tserovani",
+        name: "Elise of Tserovani",
+        monastery: "Tserovani Church",
+        georgianName: "ელისე წეროვნელი",
+        region: "Mtskheta-Mtianeti",
+        coordinates: [44.6883, 41.8792],
+        imageUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=700&q=80",
+        gmapsUrl: "https://www.google.com/maps/search/?api=1&query=Tserovani+Church+Georgia",
+        notable: "Established solitary prayer cells and churches in the valleys near Tserovani and Mtskheta.",
+        martyrdom: "Lived to extreme old age and passed into eternal rest in peace at his retreat in Tserovani."
+      }
+    ];
+
+    let map;
+    const markers = {};
+
+    function closeAllPopups() {
+      Object.values(markers).forEach(item => {
+        if (item.popup && item.popup.isOpen()) item.popup.remove();
+      });
+    }
+
+    function renderCards(list) {
+      const sidebar = document.getElementById('monks-list');
+      if (!sidebar) return;
+      sidebar.innerHTML = '';
+
+      const counter = document.getElementById('counter');
+      if (counter) counter.innerText = `${list.length} of ${assyrianFathers.length} Monasteries`;
+
+      list.forEach(father => {
+        const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
+        const card = document.createElement('article');
+        card.id = `card-${father.id}`;
+        card.className = "p-3.5 rounded-xl border bg-white cursor-pointer shadow-sm hover:shadow-md hover:border-amber-500 transition duration-150 border-stone-200/90 text-xs";
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isMartyr ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-stone-100 text-stone-700 border border-stone-200'}">
+                  ${father.region}
+                </span>
+                ${isMartyr ? '<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-800">Hieromartyr</span>' : ''}
+              </div>
+              <h2 class="font-serif font-bold text-sm text-stone-900 transition">
+                ${father.name}
+              </h2>
+              <div class="text-[11px] text-stone-500 italic mb-2">
+                <span>${father.georgianName}</span> • <span class="font-semibold text-amber-800 not-italic">${father.monastery}</span>
+              </div>
+            </div>
+            <button class="p-1.5 rounded-lg bg-stone-100 text-stone-500 hover:text-amber-800 shrink-0" title="Fly to location">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </button>
+          </div>
+          <p class="text-stone-600 leading-relaxed mt-1 mb-2">
+            ${father.notable}
+          </p>
+          <div class="pt-2 border-t border-stone-100 text-[11px] ${isMartyr ? 'text-red-900 font-medium' : 'text-stone-500'}">
+            <strong>Repose:</strong> ${father.martyrdom}
+          </div>
+        `;
+
+        card.addEventListener('click', () => selectFather(father.id, true));
+        sidebar.appendChild(card);
+      });
+    }
+
+    function initMapbox() {
+      if (typeof mapboxgl === 'undefined') return;
+      mapboxgl.accessToken = MAPBOX_TOKEN;
+
+      map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/outdoors-v12',
+        center: [44.95, 41.85],
+        zoom: 8.5
+      });
+
+      map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+      assyrianFathers.forEach(father => {
+        const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
+        const el = document.createElement('div');
+        el.className = 'custom-marker';
+        el.id = `marker-${father.id}`;
+        if (isMartyr) el.style.backgroundColor = '#991b1b';
+        el.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M7 8h10M8 15h8"/></svg>`;
+
+        const popup = new mapboxgl.Popup({ offset: 20, closeOnClick: true }).setHTML(`
+          <div>
+            <div style="height: 130px; width: 100%; position: relative; background: #292524;">
+              <img src="${father.imageUrl}" alt="${father.monastery}" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+              <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);"></div>
+              <span style="position: absolute; bottom: 8px; left: 10px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.95); color: #1c1917;">
+                ${father.region}
+              </span>
+            </div>
+
+            <div style="padding: 10px 12px 12px;">
+              <h3 style="font-family: 'Cinzel', serif; font-weight: bold; font-size: 13px; color: #1c1917; margin: 0 0 2px;">${father.monastery}</h3>
+              <p style="font-size: 11px; color: #78716c; font-style: italic; margin: 0 0 10px;">${father.name}</p>
+
+              <a href="${father.gmapsUrl}" target="_blank" rel="noopener noreferrer" 
+                 style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 7px 10px; border-radius: 6px; background-color: #2563eb; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: 600;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span>Google Maps Photos & 3D</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+        `);
+
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat(father.coordinates)
+          .setPopup(popup)
+          .addTo(map);
+
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectFather(father.id, false);
+        });
+
+        markers[father.id] = { marker, popup, coords: father.coordinates };
+      });
+    }
+
+    function selectFather(id, shouldFly = true) {
+      const father = assyrianFathers.find(f => f.id === id);
+      if (!father) return;
+
+      closeAllPopups();
+
+      document.querySelectorAll('#monks-list article').forEach(el => {
+        el.classList.remove('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+      });
+      const activeCard = document.getElementById(`card-${id}`);
+      if (activeCard) {
+        activeCard.classList.add('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      document.querySelectorAll('.custom-marker').forEach(m => m.classList.remove('active'));
+      const activeMarker = document.getElementById(`marker-${id}`);
+      if (activeMarker) activeMarker.classList.add('active');
+
+      if (map && markers[id]) {
+        if (shouldFly) {
+          map.flyTo({
+            center: father.coordinates,
+            zoom: 12.5,
+            duration: 1400,
+            essential: true
+          });
+        }
+        setTimeout(() => {
+          markers[id].popup.addTo(map);
+        }, shouldFly ? 700 : 50);
+      }
+    }
+
+    function resetView() {
+      if (!map) return;
+      closeAllPopups();
+      map.flyTo({ center: [44.95, 41.85], zoom: 8.5, duration: 1000 });
+      document.querySelectorAll('#monks-list article').forEach(el => {
+        el.classList.remove('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+      });
+      document.querySelectorAll('.custom-marker').forEach(m => m.classList.remove('active'));
+    }
+
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      const filtered = assyrianFathers.filter(f => 
+        f.name.toLowerCase().includes(q) ||
+        f.monastery.toLowerCase().includes(q) ||
+        f.georgianName.toLowerCase().includes(q) ||
+        f.region.toLowerCase().includes(q) ||
+        f.notable.toLowerCase().includes(q) ||
+        f.martyrdom.toLowerCase().includes(q)
+      );
+
+      renderCards(filtered);
+
+      assyrianFathers.forEach(f => {
+        const item = markers[f.id];
+        if (!item) return;
+        const matches = filtered.some(match => match.id === f.id);
+        item.marker.getElement().style.display = matches ? 'flex' : 'none';
+      });
+    }
+
+    // Запуск приложения
+    function startApp() {
+      renderCards(assyrianFathers);
+      initMapbox();
+
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+
+      const resetBtn = document.getElementById('reset-btn');
+      if (resetBtn) resetBtn.addEventListener('click', resetView);
+
+      // Фоновое обновление из monks.json (если файл доступен)
+      fetch('data/monks.json')
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            assyrianFathers = data;
+            renderCards(assyrianFathers);
+          }
+        })
+        .catch(() => {});
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startApp);
+    } else {
+      startApp();
+    }
+  </script>
+</body>
+</html>
