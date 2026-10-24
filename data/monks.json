@@ -37,7 +37,7 @@
   },
   {
     "id": "abibos-nekresi",
-    "name: "Abibos of Nekresi",
+    "name": "Abibos of Nekresi",
     "monastery": "Nekresi Monastery",
     "georgianName": "აბიბოს ნეკრესელი",
     "region": "Kakheti (Alazani Valley)",
@@ -74,7 +74,7 @@
   {
     "id": "zenon-ikhalto",
     "name": "Zenon of Ikhalto",
-    "monastery: "Ikhalto Monastery",
+    "monastery": "Ikhalto Monastery",
     "georgianName": "ზენონ იყალთოელი",
     "region": "Kakheti (Telavi)",
     "coordinates": [45.3802, 41.9372],
@@ -132,9 +132,9 @@
     "martyrdom": "Reposed in peace after establishing an influential monastic cloister in central Georgia."
   },
   {
-    "id: "piros-breti",
+    "id": "piros-breti",
     "name": "Piros of Breti",
-    "monastery": "Breti Monastery",
+    "monastery: "Breti Monastery",
     "georgianName": "პიროზ ბრეთელი",
     "region": "Shida Kartli (Kareli)",
     "coordinates": [43.9161, 42.0633],
