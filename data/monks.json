@@ -144,15 +144,15 @@
     "martyrdom": "Died peacefully; buried inside the Mother of God Church at Breti Monastery."
   },
   {
-    "id": "elise-tserovani",
-    "name": "Elise of Tserovani",
-    "monastery": "Tserovani Church",
+    "id": "ise-tsilkani",
+    "name": "Ise of Tsilkani",
+    "monastery": "Tsilkani Cathedral",
     "georgianName": "ელისე წეროვნელი",
     "region": "Mtskheta-Mtianeti",
     "coordinates": [44.6883, 41.8792],
     "imageUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Tserovani+Trinity&query_place_id=ChIJAZxerMxlREARYVG_tPETgfU",
-    "notable": "Established solitary prayer cells and churches in the valleys near Tserovani and Mtskheta.",
-    "martyrdom": "Lived to extreme old age and passed into eternal rest in peace at his retreat in Tserovani."
+    "gmapsUrl": "https://maps.app.goo.gl/zPPdu6k5tbxyvVck6",
+    "notable": "Established solitary prayer cells and churches in the valleys near Tsilkani and Mtskheta.",
+    "martyrdom": "Lived to extreme old age and passed into eternal rest in peace at his retreat in Tsilkani."
   }
 ]
