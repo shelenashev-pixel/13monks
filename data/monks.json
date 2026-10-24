@@ -7,7 +7,7 @@
     "region": "Mtskheta-Mtianeti",
     "coordinates": [44.7644, 41.8711],
     "imageUrl": "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Zedazeni+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Zedazeni+Monastery/@41.8712688,44.7652799,17z/data=!3m1!4b1!4m6!3m5!1s0x404468a3b390a65d:0x1bfcfad66ce57486!8m2!3d41.8712688!4d44.7652799!16s%2Fm%2F02rx6pj",
     "notable": "Leader of the mission from Mesopotamia. Chose Mount Zedazeni north of Mtskheta. Lived in ascetic solitude with bears as companions.",
     "martyrdom": "Died peacefully around 573 AD. Buried inside Zedazeni Church."
   },
@@ -19,7 +19,7 @@
     "region": "Kakheti (Gareja Desert)",
     "coordinates": [45.3761, 41.4472],
     "imageUrl": "https://images.unsplash.com/photo-1584467541268-b040f83be3fd?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=David+Gareja+Lavra+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/David+Gareji+monastery/@41.4473406,45.3764547,17z/data=!3m1!4b1!4m6!3m5!1s0x4046b0894dcba09f:0x572a443af100e678!8m2!3d41.4473406!4d45.3764547!16zL20vMDJ0MjE4",
     "notable": "Initially dwelt on Mount Mtatsminda in Tbilisi, then retreated south into the harsh semi-desert caves of Gareja.",
     "martyrdom": "Reposed in peace in extreme old age. Refused to enter Jerusalem out of humility."
   },
@@ -31,7 +31,7 @@
     "region": "Mtskheta-Mtianeti",
     "coordinates": [44.6403, 41.8625],
     "imageUrl": "https://images.unsplash.com/photo-1548625361-12c8230232ef?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Shio-Mgvime+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Shiomgvime+Monastery/@41.8623609,44.6402038,17z/data=!3m1!4b1!4m6!3m5!1s0x404464fce9540da1:0xe9fa3081792d61d7!8m2!3d41.8623609!4d44.6402038!16s%2Fm%2F027b25y",
     "notable": "Lived in a remote limestone canyon near Mtskheta. Thousands gathered to form Georgia's largest monastery.",
     "martyrdom": "Voluntarily spent the last 15 years sealed deep in an underground pit tomb in ceaseless prayer."
   },
@@ -43,7 +43,7 @@
     "region": "Kakheti (Alazani Valley)",
     "coordinates": [45.7675, 41.9723],
     "imageUrl": "https://images.unsplash.com/photo-1578645510446-01f66d1389bb?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Nekresi+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Nekresi&query_place_id=ChIJBSsMNG_aRUARuqwXOPSZqas",
     "notable": "Bishop of Nekresi. Preached among mountain tribes and extinguished a Zoroastrian sacred fire altar with water.",
     "martyrdom": "Martyred: Captured by the Persian Marzban, scourged, and stoned to death near Rekhi."
   },
@@ -55,7 +55,7 @@
     "region": "Kvemo Kartli",
     "coordinates": [45.0294, 41.7892],
     "imageUrl": "https://images.unsplash.com/photo-1582560475093-ba66accbc424?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Martqopi+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Martkopi+Monastery/@41.8274472,44.9678167,17z/data=!3m1!4b1!4m6!3m5!1s0x40446abd48f7f073:0x1f639fee1943215e!8m2!3d41.8274472!4d44.9678167!16s%2Fg%2F11clt0j_nz",
     "notable": "Brought an authentic Image of Christ on a clay tile (Mandylion) to Georgia. Lived atop a tall stone tower as a stylite.",
     "martyrdom": "Spent his final 15 years atop his pillar in prayer, reposing peacefully around 590 AD."
   },
@@ -67,7 +67,7 @@
     "region": "Kakheti (Signagi)",
     "coordinates": [45.8944, 41.5794],
     "imageUrl": "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Khirsa+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Khirsa+St.+Stephan+Monastery/@41.5776934,45.9991593,17z/data=!3m1!4b1!4m6!3m5!1s0x4046f478f60b2b6d:0xc5b0d974dcb4efc0!8m2!3d41.5776934!4d45.9991593!16s%2Fg%2F11clszs0l0",
     "notable": "Sent east into fertile Kakheti. Built a major cathedral dedicated to Archdeacon Stephen near the Khirsa river.",
     "martyrdom": "Passed away peacefully; his tomb is preserved near the altar in Khirsa Cathedral."
   },
@@ -79,7 +79,7 @@
     "region": "Kakheti (Telavi)",
     "coordinates": [45.3802, 41.9372],
     "imageUrl": "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Ikhalto+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Ikalto+Monastery/@41.9373621,45.3811438,17z/data=!3m1!4b1!4m6!3m5!1s0x404434885cdbc939:0x59eeba460d1974fc!8m2!3d41.9373621!4d45.3811438!16zL20vMDJzNnJi",
     "notable": "Founded the Holy Transfiguration cloister, laying foundations for Georgia's famous Academy of philosophy and science.",
     "martyrdom": "Reposed in peace of old age; enshrined within the Church of the Holy Spirit at Ikhalto."
   },
@@ -91,7 +91,7 @@
     "region": "Kakheti (Akhmeta)",
     "coordinates": [45.3670, 42.0108],
     "imageUrl": "https://images.unsplash.com/photo-1599827017992-0b82b13c1c73?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Alaverdi+Cathedral+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Alaverdi+Monastery/@42.032484,45.3772068,17z/data=!3m1!4b1!4m6!3m5!1s0x4045b5a2f185196f:0x5ed1db1b09239e1d!8m2!3d42.032484!4d45.3772068!16zL20vMDVsbDk2",
     "notable": "Settled in the wild plains of Alaverdi. His hermitage later grew into the monumental 11th-century Alaverdi Cathedral.",
     "martyrdom": "Fell asleep in the Lord peacefully in 570 AD. His tomb became an ancient center of pilgrimage."
   },
@@ -103,7 +103,7 @@
     "region": "Shida Kartli (Kaspi)",
     "coordinates": [44.4069, 41.9961],
     "imageUrl": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Samtavisi+Cathedral+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Samtavisi+Cathedral/@42.0063451,44.4089068,17z/data=!3m1!4b1!4m6!3m5!1s0x40448e6098cc5943:0xd26d4b6b794129f5!8m2!3d42.0063451!4d44.4089068!16s%2Fm%2F02x23yj",
     "notable": "Established a monastic community on the banks of the Lekhura river. Renowned for boundless charity and discipline.",
     "martyrdom": "Died peacefully; buried inside Samtavisi Cathedral, famed for its masterwork stone carvings."
   },
@@ -115,7 +115,7 @@
     "region": "Kakheti (Gombori Pass)",
     "coordinates": [45.4055, 41.9125],
     "imageUrl": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Dzveli+Shuamta+Monastery+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Dzveli+Shuamta%27s+Monastery/@41.9108884,45.4059221,17z/data=!3m1!4b1!4m6!3m5!1s0x404433bca4c07a77:0xf96a1a1487b4b33!8m2!3d41.9108884!4d45.4059221!16s%2Fg%2F12214wcn",
     "notable": "Settled in the dense deciduous woods of Tsiv-Gombori mountains, building the early Christian basilica of Shuamta.",
     "martyrdom": "Died in tranquility surrounded by disciples; revered as a protector of mountaineers and travelers."
   },
@@ -127,19 +127,19 @@
     "region": "Shida Kartli (Khashuri)",
     "coordinates": [43.6820, 42.0520],
     "imageUrl": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Ulumbo+Monastery+Ali+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/place/Ulumbo+Monastery/@42.1414147,43.5845125,17z/data=!3m1!4b1!4m6!3m5!1s0x4043553691e36b67:0x9c1e0b13093a52cf!8m2!3d42.1414147!4d43.5845125!16s%2Fg%2F11b6gcn005",
     "notable": "Established a flourishing spiritual center at Mount Ulumbo, overturning remaining pagan practices.",
     "martyrdom": "Reposed in peace after establishing an influential monastic cloister in central Georgia."
   },
   {
     "id": "piros-breti",
     "name": "Piros of Breti",
-    "monastery: "Breti Monastery",
+    "monastery": "Breti Monastery",
     "georgianName": "პიროზ ბრეთელი",
     "region": "Shida Kartli (Kareli)",
     "coordinates": [43.9161, 42.0633],
     "imageUrl": "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Breti+Monastery+Georgia",
+    "gmapsUrl": "https://maps.app.goo.gl/eVdwKMJ4CePGYPD96",
     "notable": "Founded a monastic cloister at Breti. Renowned for unceasing empathy toward leprosy patients and the poor.",
     "martyrdom": "Died peacefully; buried inside the Mother of God Church at Breti Monastery."
   },
@@ -151,7 +151,7 @@
     "region": "Mtskheta-Mtianeti",
     "coordinates": [44.6883, 41.8792],
     "imageUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=700&q=80",
-    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Tserovani+Church+Georgia",
+    "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Tserovani+Trinity&query_place_id=ChIJAZxerMxlREARYVG_tPETgfU",
     "notable": "Established solitary prayer cells and churches in the valleys near Tserovani and Mtskheta.",
     "martyrdom": "Lived to extreme old age and passed into eternal rest in peace at his retreat in Tserovani."
   }
