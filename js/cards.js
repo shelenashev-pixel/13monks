@@ -1,64 +1,118 @@
-// Модуль работы с карточками монастырей
+// Модуль отрисовки и управления карточками монастырей
 
-export function renderCards(list, allMonks, onSelectCallback) {
-  const sidebar = document.getElementById('monks-list');
-  const counter = document.getElementById('counter');
-  if (!sidebar) return;
+let onCardClickCallback = null;
 
-  sidebar.innerHTML = '';
-  if (counter) counter.innerText = `${list.length} of ${allMonks.length} Monasteries`;
+export function renderCards(monks, allMonks, onSelect) {
+  onCardClickCallback = onSelect;
+  const container = document.getElementById('cards-container');
+  if (!container) return;
 
-  if (list.length === 0) {
-    sidebar.innerHTML = '<p class="text-center text-xs text-stone-500 py-8">No matching monks or monasteries found.</p>';
+  container.innerHTML = '';
+
+  // Обновляем счетчик
+  const countBadge = document.getElementById('counter-badge');
+  if (countBadge) {
+    countBadge.innerText = `${monks.length} of ${allMonks.length} Monasteries`;
+  }
+
+  if (monks.length === 0) {
+    container.innerHTML = `
+      <div class="p-8 text-center text-stone-500">
+        <p class="font-serif text-lg mb-1">No monasteries found</p>
+        <p class="text-xs">Try searching by another name, region, or keyword</p>
+      </div>
+    `;
     return;
   }
 
-  list.forEach(father => {
-    const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
-    const card = document.createElement('article');
-    card.id = `card-${father.id}`;
-    card.className = "p-3.5 rounded-xl border bg-white cursor-pointer shadow-sm hover:shadow-md hover:border-amber-500 transition duration-150 border-stone-200/90 text-xs";
+  monks.forEach((monk) => {
+    // Находим сквозной номер от 01 до 13 по исходному массиву
+    const originalIndex = allMonks.findIndex(m => m.id === monk.id) + 1;
+    const formattedIndex = originalIndex < 10 ? `0${originalIndex}` : `${originalIndex}`;
+
+    const card = document.createElement('div');
+    card.id = `card-${monk.id}`;
+    
+    // Базовые стили по макету Figma: белый фон, скругление, отступы, курсор
+    card.className = `
+      monk-card group relative p-6 rounded-xl transition-all duration-200 cursor-pointer text-stone-900
+      bg-white border border-transparent shadow-sm
+      hover:border-stone-800 hover:shadow-md
+    `.replace(/\s+/g, ' ').trim();
 
     card.innerHTML = `
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <div class="flex items-center gap-1.5 mb-1">
-            <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${isMartyr ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-stone-100 text-stone-700 border border-stone-200'}">
-              ${father.region}
-            </span>
-            ${isMartyr ? '<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-100 text-red-800">Hieromartyr</span>' : ''}
-          </div>
-          <h2 class="font-serif font-bold text-sm text-stone-900 transition">
-            ${father.name}
-          </h2>
-          <div class="text-[11px] text-stone-500 italic mb-2">
-            <span>${father.georgianName}</span> • <span class="font-semibold text-amber-800 not-italic">${father.monastery}</span>
-          </div>
+      <!-- Верхний блок: Номер слева и Заголовок по центру -->
+      <div class="flex items-start gap-5 mb-5">
+        
+        <!-- Колонка с крупным номером и линией-разделителем -->
+        <div class="flex flex-col items-center flex-shrink-0 w-12">
+          <span class="font-serif text-4xl leading-none tracking-tight text-stone-900 select-none">
+            ${formattedIndex}
+          </span>
+          <div class="w-full h-[1px] bg-stone-300 mt-3 group-hover:bg-stone-800 transition-colors"></div>
         </div>
-        <button class="p-1.5 rounded-lg bg-stone-100 text-stone-500 hover:text-amber-800 shrink-0" title="Fly to location">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        </button>
+
+        <!-- Центральный блок: Имя и Монастырь -->
+        <div class="flex-1 text-center pr-6">
+          <h3 class="font-serif text-2xl text-stone-900 leading-snug font-normal">
+            ${monk.name}
+          </h3>
+          <p class="font-sans text-sm text-stone-600 mt-1">
+            ${monk.monastery}
+          </p>
+        </div>
       </div>
-      <p class="text-stone-600 leading-relaxed mt-1 mb-2">
-        ${father.notable}
-      </p>
-      <div class="pt-2 border-t border-stone-100 text-[11px] ${isMartyr ? 'text-red-900 font-medium' : 'text-stone-500'}">
-        <strong>Repose:</strong> ${father.martyrdom}
+
+      <!-- Текстовое описание: объединённый текст деяний и кончины -->
+      <div class="font-sans text-[13px] leading-relaxed text-stone-800">
+        <p>
+          ${monk.notable} 
+          <span class="text-stone-700">Repose: ${monk.martyrdom}</span>
+        </p>
+      </div>
+
+      <!-- Скрытая ссылка на Google Карты при клике внутри описания, если нужно -->
+      <div class="mt-3 pt-3 border-t border-stone-100 flex justify-end">
+        <a 
+          href="${monk.gmapsUrl}" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          onclick="event.stopPropagation()"
+          class="text-[11px] font-sans text-stone-400 hover:text-stone-800 transition-colors flex items-center gap-1"
+        >
+          <span>Open in Google Maps</span>
+          <span>↗</span>
+        </a>
       </div>
     `;
 
-    card.addEventListener('click', () => onSelectCallback(father.id));
-    sidebar.appendChild(card);
+    card.addEventListener('click', () => {
+      if (onCardClickCallback) {
+        onCardClickCallback(monk.id);
+      }
+    });
+
+    container.appendChild(card);
   });
 }
 
+/**
+ * Подсветка выбранной карточки (состояние Selected из Figma)
+ */
 export function highlightActiveCard(id) {
-  document.querySelectorAll('#monks-list article').forEach(el => {
-    el.classList.remove('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+  // Сбрасываем все карточки в Default-состояние
+  document.querySelectorAll('.monk-card').forEach(c => {
+    c.classList.remove('bg-[#f2ece1]', 'border-stone-800', 'shadow-md');
+    c.classList.add('bg-white', 'border-transparent', 'shadow-sm');
   });
+
   const activeCard = document.getElementById(`card-${id}`);
   if (activeCard) {
-    activeCard.classList.add('ring-2', 'ring-amber-700', 'bg-amber-50/40', 'border-amber-500');
+    // Применяем стили выбранного состояния (пергаментный тёплый фон + рамка)
+    activeCard.classList.remove('bg-white', 'border-transparent', 'shadow-sm');
+    activeCard.classList.add('bg-[#f2ece1]', 'border-stone-800', 'shadow-md');
+
+    // Плавный скролл до карточки
     activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
