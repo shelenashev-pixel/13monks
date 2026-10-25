@@ -1,107 +1,120 @@
-// Модуль интерактивной карты Mapbox
-
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2hlbGVuYXNoZXYiLCJhIjoiY212anhlcGk0MDlyMjJ4czk2Z20yazJvdSJ9.XDfXRGzxSVT3SIbw7dYh_Q';
-
 let mapInstance = null;
-const markersRegistry = {};
+let markersMap = {};
+let currentActivePopup = null;
 
 export function initMap(monks, onMarkerClick) {
-  if (typeof mapboxgl === 'undefined') return;
-  mapboxgl.accessToken = MAPBOX_TOKEN;
-
-  mapInstance = new mapboxgl.Map({
+  // Координаты центра Грузии
+  mapInstance = new maplibregl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/outdoors-v12',
-    center: [44.95, 41.85],
-    zoom: 8.5
+    style: {
+      version: 8,
+      sources: {
+        openstreetmap: {
+          type: 'raster',
+          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tileSize: 256,
+          attribution: '&copy; OpenStreetMap contributors'
+        }
+      },
+      layers: [{
+        id: 'openstreetmap',
+        type: 'raster',
+        source: 'openstreetmap'
+      }]
+    },
+    center: [44.8, 41.9],
+    zoom: 7.5
   });
 
-  mapInstance.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  mapInstance.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
-  monks.forEach(father => {
-    const isMartyr = father.martyrdom.toLowerCase().startsWith('martyred');
+  // Расставляем маркеры монастырей
+  monks.forEach((monk) => {
+    if (!monk.coordinates) return;
+
+    // Кастомный маркер с крестом
     const el = document.createElement('div');
-    el.className = 'custom-marker';
-    el.id = `marker-${father.id}`;
-    if (isMartyr) el.style.backgroundColor = '#991b1b';
-    el.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v20M7 8h10M8 15h8"/></svg>`;
+    el.className = 'w-7 h-7 bg-stone-900 border-2 border-white rounded-full flex items-center justify-center text-white text-xs cursor-pointer shadow-lg hover:scale-110 transition-transform';
+    el.innerHTML = '✝';
 
-    const popup = new mapboxgl.Popup({ offset: 20, closeOnClick: true }).setHTML(`
-      <div>
-        <div style="height: 125px; width: 100%; position: relative; background: #292524;">
-          <img src="${father.imageUrl}" alt="${father.monastery}" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-          <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);"></div>
-          <span style="position: absolute; bottom: 8px; left: 10px; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.95); color: #1c1917;">
-            ${father.region}
-          </span>
-        </div>
-        <div style="padding: 10px 12px 12px;">
-          <h3 style="font-family: 'Cinzel', serif; font-weight: bold; font-size: 13px; color: #1c1917; margin: 0 0 2px;">${father.monastery}</h3>
-          <p style="font-size: 11px; color: #78716c; font-style: italic; margin: 0 0 10px;">${father.name}</p>
-          <a href="${father.gmapsUrl}" target="_blank" rel="noopener noreferrer" 
-             style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 7px 10px; border-radius: 6px; background-color: #2563eb; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: 600;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-            <span>Google Maps Photos & 3D</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/></svg>
-          </a>
-        </div>
-      </div>
-    `);
-
-    const marker = new mapboxgl.Marker(el)
-      .setLngLat(father.coordinates)
-      .setPopup(popup)
+    const marker = new maplibregl.Marker(el)
+      .setLngLat(monk.coordinates)
       .addTo(mapInstance);
 
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      onMarkerClick(father.id);
+    marker.getElement().addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (onMarkerClick) onMarkerClick(monk.id);
     });
 
-    markersRegistry[father.id] = { marker, popup, coords: father.coordinates };
+    markersMap[monk.id] = { marker, monk };
   });
 
-  setTimeout(() => mapInstance.resize(), 200);
-  window.addEventListener('resize', () => mapInstance.resize());
+  return mapInstance;
 }
 
-export function focusMarker(id, shouldFly = true) {
-  const item = markersRegistry[id];
-  if (!item || !mapInstance) return;
+// Плавный зум к выбранному монастырю
+export function flyToMonk(monk) {
+  if (!mapInstance || !monk || !monk.coordinates) return;
 
-  Object.values(markersRegistry).forEach(({ popup }) => {
-    if (popup && popup.isOpen()) popup.remove();
+  mapInstance.flyTo({
+    center: monk.coordinates,
+    zoom: 11,
+    essential: true,
+    speed: 1.2
   });
+}
 
-  document.querySelectorAll('.custom-marker').forEach(m => m.classList.remove('active'));
-  const el = document.getElementById(`marker-${id}`);
-  if (el) el.classList.add('active');
+// Отображение всплывающей карточки над монастырем
+export function showPopup(monk) {
+  if (!mapInstance || !monk || !monk.coordinates) return;
 
-  if (shouldFly) {
-    mapInstance.flyTo({
-      center: item.coords,
-      zoom: 12.5,
-      duration: 1400,
-      essential: true
-    });
+  if (currentActivePopup) {
+    currentActivePopup.remove();
   }
 
-  setTimeout(() => {
-    item.popup.addTo(mapInstance);
-  }, shouldFly ? 700 : 50);
+  const popupContent = document.createElement('div');
+  popupContent.className = 'w-[230px] bg-white rounded-2xl overflow-hidden font-sans text-stone-900 select-none';
+  popupContent.innerHTML = `
+    <div class="w-full h-32 overflow-hidden bg-stone-100">
+      <img
+        src="${monk.imageUrl || `./images/monasteries/${monk.id}.jpg`}"
+        alt="${monk.monastery}"
+        class="w-full h-full object-cover"
+        onerror="this.style.display='none'"
+      />
+    </div>
+    <div class="p-4 text-center">
+      <span class="text-[11px] font-sans text-stone-400 block tracking-wide">
+        ${monk.region || ''}
+      </span>
+      <h4 class="font-serif text-xl text-stone-900 leading-snug mt-1 mb-2 font-normal">
+        ${monk.monastery}
+      </h4>
+      <p class="text-[11px] leading-relaxed text-stone-500 font-normal">
+        ${monk.martyrdom || monk.notable || ''}
+      </p>
+    </div>
+  `;
+
+  currentActivePopup = new maplibregl.Popup({
+    offset: 25,
+    closeButton: true,
+    closeOnClick: false,
+    className: 'custom-monk-popup'
+  })
+    .setLngLat(monk.coordinates)
+    .setDOMContent(popupContent)
+    .addTo(mapInstance);
 }
 
-export function resetMapCamera() {
+// Сброс приближения карты к общему виду
+export function resetMapView() {
   if (!mapInstance) return;
-  Object.values(markersRegistry).forEach(({ popup }) => {
-    if (popup && popup.isOpen()) popup.remove();
-  });
-  document.querySelectorAll('.custom-marker').forEach(m => m.classList.remove('active'));
-  mapInstance.flyTo({ center: [44.95, 41.85], zoom: 8.5, duration: 1000 });
-}
+  if (currentActivePopup) currentActivePopup.remove();
 
-export function filterMarkersVisibility(visibleIds) {
-  Object.entries(markersRegistry).forEach(([id, { marker }]) => {
-    marker.getElement().style.display = visibleIds.includes(id) ? 'flex' : 'none';
+  mapInstance.flyTo({
+    center: [44.8, 41.9],
+    zoom: 7.5,
+    speed: 1.2
   });
 }

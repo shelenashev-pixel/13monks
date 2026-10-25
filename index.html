@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="referrer" content="no-referrer">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>13 Assyrian Monks in Georgia</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Mapbox GL JS -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
   <!-- Google Fonts: Prata & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,12 +46,12 @@
       transform: scale(1.35); background: #b45309; border-color: #fef3c7;
     }
 
-    .mapboxgl-popup-content {
+    .maplibregl-popup-content {
       background: #ffffff; border-radius: 12px; padding: 0 !important;
       box-shadow: 0 16px 32px -4px rgba(0,0,0,0.25); font-family: 'Inter', sans-serif;
       max-width: 275px; overflow: hidden; border: 1px solid #ebd9c8;
     }
-    .mapboxgl-popup-close-button {
+    .maplibregl-popup-close-button {
       padding: 4px 8px; font-size: 18px; color: #ffffff !important;
       text-shadow: 0 1px 4px rgba(0,0,0,0.9); z-index: 20;
     }
@@ -136,13 +136,7 @@
 
     <!-- Большая круглая икона -->
     <div class="w-36 h-36 mx-auto rounded-full overflow-hidden bg-stone-100 border-2 border-stone-200 shadow-inner mb-6 flex items-center justify-center">
-      <img 
-        id="modal-monk-icon" 
-        src="" 
-        alt="" 
-        class="w-full h-full object-cover"
-        onerror="this.src='./images/icons/placeholder.jpg'"
-      />
+       <img id="modal-monk-icon" src="" alt="" class="w-full h-full object-cover" onerror="this.onerror=null; this.style.display='none';" />
     </div>
 
     <!-- Текстовое жизнеописание -->

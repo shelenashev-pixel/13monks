@@ -32,12 +32,12 @@ export function renderCards(monks, allMonks, onSelect) {
 
         <!-- Медальон иконы -->
         <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-stone-100 border border-stone-200">
-          <img 
-            src="${monk.iconUrl || `./images/icons/${monk.id}.jpg`}" 
-            alt="${monk.name}" 
-            class="w-full h-full object-cover"
-            onerror="this.style.display='none'"
-          />
+         <img
+  src="${monk.iconUrl || `./images/icons/${monk.id}.jpg`}"
+  alt="${monk.name}"
+  class="w-full h-full object-cover"
+  onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span class=\\'text-xs text-stone-400\\'>✝</span>';"
+/>
         </div>
 
         <!-- Имя и монастырь -->

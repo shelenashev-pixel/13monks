@@ -1,5 +1,5 @@
 import { renderCards, highlightActiveCard } from './cards.js';
-import { flyToMonk, showPopup, closeCurrentPopup } from './map.js';
+import { initMap, flyToMonk, showPopup, resetMapView } from './map.js';
 
 let allMonksData = [];
 
@@ -33,9 +33,6 @@ export function closeMonkModal() {
   const modal = document.getElementById('monk-detail-modal');
   if (modal) modal.classList.add('hidden');
   highlightActiveCard(null);
-  if (typeof closeCurrentPopup === 'function') {
-    closeCurrentPopup();
-  }
 }
 
 // Единый обработчик выбора монаха (по клику на карточку или маркер)
@@ -59,9 +56,42 @@ export function handleSelectMonk(monkId) {
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
   const response = await fetch('./data/monks.json');
+  if (!response.ok) {
+    throw new Error(`Failed to load monastery data: ${response.status} ${response.statusText}`);
+  }
+
   allMonksData = await response.json();
 
+  initMap(allMonksData, handleSelectMonk);
   renderCards(allMonksData, allMonksData, handleSelectMonk);
+
+  const searchInput = document.getElementById('search-input');
+  const counter = document.getElementById('counter');
+  const renderFilteredCards = () => {
+    const query = searchInput?.value.trim().toLocaleLowerCase() ?? '';
+    const filteredMonks = allMonksData.filter((monk) =>
+      [monk.name, monk.monastery, monk.region]
+        .some((value) => value?.toLocaleLowerCase().includes(query))
+    );
+
+    renderCards(filteredMonks, allMonksData, handleSelectMonk);
+    if (counter) counter.textContent = `${filteredMonks.length} Monasteries`;
+  };
+
+  if (searchInput) {
+    searchInput.addEventListener('input', renderFilteredCards);
+  }
+
+  const resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      renderFilteredCards();
+      resetMapView();
+    });
+  }
+
+  renderFilteredCards();
 
   // Кнопка закрытия модального окна
   const closeBtn = document.getElementById('close-modal-btn');
