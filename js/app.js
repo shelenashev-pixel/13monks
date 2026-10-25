@@ -8,6 +8,7 @@ function openMonkModal(monk, index) {
   const modal = document.getElementById('monk-detail-modal');
   if (!modal || !monk) return;
 
+  document.body.classList.add('monk-modal-open');
   document.getElementById('modal-monk-index').innerText = index;
   document.getElementById('modal-monk-name').innerText = monk.name;
   document.getElementById('modal-monk-icon').src = monk.iconUrl || `./images/icons/${monk.id}.jpg`;
@@ -32,6 +33,7 @@ function openMonkModal(monk, index) {
 export function closeMonkModal() {
   const modal = document.getElementById('monk-detail-modal');
   if (modal) modal.classList.add('hidden');
+  document.body.classList.remove('monk-modal-open');
   highlightActiveCard(null);
 }
 

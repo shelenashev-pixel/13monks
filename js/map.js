@@ -37,7 +37,7 @@ export function initMap(monks, onMarkerClick) {
     el.className = 'w-7 h-7 bg-stone-900 border-2 border-white rounded-full flex items-center justify-center text-white text-xs cursor-pointer shadow-lg hover:scale-110 transition-transform';
     el.innerHTML = '✝';
 
-    const marker = new maplibregl.Marker(el)
+    const marker = new maplibregl.Marker({ element: el })
       .setLngLat(monk.coordinates)
       .addTo(mapInstance);
 
@@ -58,6 +58,7 @@ export function flyToMonk(monk) {
 
   mapInstance.flyTo({
     center: monk.coordinates,
+    offset: window.innerWidth > 760 ? [Math.min(window.innerWidth * 0.32, 440), 0] : [0, 0],
     zoom: 11,
     essential: true,
     speed: 1.2
