@@ -13,6 +13,7 @@
   },
   {
     "id": "davit-gareja",
+    "iconUrl": "./images/icons/david-gareji.jpg",
     "name": "Davit of Gareja",
     "monastery": "David Gareja Lavra",
     "georgianName": "დავით გარეჯელი",
@@ -61,6 +62,7 @@
   },
   {
     "id": "stepane-khirsa",
+    "iconUrl": "./images/icons/stephen-khirsa.jpg",
     "name": "Stephane of Khirsa",
     "monastery": "Khirsa Monastery",
     "georgianName": "სტეფანე ხირსელი",
@@ -73,6 +75,7 @@
   },
   {
     "id": "zenon-ikhalto",
+    "iconUrl": "./images/icons/zenon-iqalto.jpg",
     "name": "Zenon of Ikhalto",
     "monastery": "Ikhalto Monastery",
     "georgianName": "ზენონ იყალთოელი",
@@ -85,6 +88,7 @@
   },
   {
     "id": "ioseb-alaverdi",
+    "iconUrl": "./images/icons/joseph-alaverdi.jpg",
     "name": "Ioseb of Alaverdi",
     "monastery": "Alaverdi Cathedral",
     "georgianName": "იოსებ ალავერდელი",
@@ -97,6 +101,7 @@
   },
   {
     "id": "isidor-samtavisi",
+    "iconUrl": "./images/icons/isidore-samtavisi.jpg",
     "name": "Isidore of Samtavisi",
     "monastery": "Samtavisi Cathedral",
     "georgianName": "ისიდორე სამთავნელი",
@@ -121,6 +126,7 @@
   },
   {
     "id": "mikhail-ulumbo",
+    "iconUrl": "./images/icons/michael-ulumbo.jpg",
     "name": "Mikhail of Ulumbo",
     "monastery": "Ulumbo Monastery",
     "georgianName": "მიქაელ ულუმბოელი",
@@ -133,6 +139,7 @@
   },
   {
     "id": "piros-breti",
+    "iconUrl": "./images/icons/pyrrhus-breti.jpg",
     "name": "Piros of Breti",
     "monastery": "Breti Monastery",
     "georgianName": "პიროზ ბრეთელი",
