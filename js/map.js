@@ -6,24 +6,24 @@ export function initMap(monks, onMarkerClick) {
   // Координаты центра Грузии
   mapInstance = new maplibregl.Map({
     container: 'map',
-    style: {
-      version: 8,
-      sources: {
-        openstreetmap: {
-          type: 'raster',
-          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-          tileSize: 256,
-          attribution: '&copy; OpenStreetMap contributors'
-        }
-      },
-      layers: [{
-        id: 'openstreetmap',
-        type: 'raster',
-        source: 'openstreetmap'
-      }]
-    },
+    style: 'https://tiles.openfreemap.org/styles/positron',
     center: [44.8, 41.9],
     zoom: 7.5
+  });
+
+  mapInstance.on('style.load', () => {
+    mapInstance.getStyle().layers.forEach((layer) => {
+      const textField = layer.layout?.['text-field'];
+      if (layer.type !== 'symbol' || !textField || !JSON.stringify(textField).includes('name')) return;
+
+      mapInstance.setLayoutProperty(layer.id, 'text-field', [
+        'coalesce',
+        ['get', 'name_en'],
+        ['get', 'name:en'],
+        ['get', 'name:latin'],
+        ['get', 'name']
+      ]);
+    });
   });
 
   mapInstance.addControl(new maplibregl.NavigationControl(), 'bottom-right');
