@@ -47,7 +47,7 @@
     ::-webkit-scrollbar-thumb { background: #c9c6bd; border-radius: 9999px; }
 
     #map { position: fixed; inset: 0; background: #e6e5d8; }
-    #map .maplibregl-canvas { filter: sepia(.45) saturate(.8); }
+    #map .maplibregl-canvas { filter: none; }
     .app-header {
       position: fixed; z-index: 20; inset: 0 0 auto; min-height: 72px;
       display: flex; align-items: flex-start; justify-content: space-between;
@@ -73,6 +73,7 @@
       display: grid; width: 31px; height: 31px; place-items: center;
       border-radius: 50%; font-size: 16px;
     }
+    .mobile-list-toggle, .mobile-list-close, .mobile-reset-btn { display: none; }
 
     .monks-panel {
       position: fixed; z-index: 10; top: 82px; bottom: 16px; left: 16px;
@@ -151,17 +152,16 @@
     #modal-monk-desc { margin: 0; color: #777; font: 13px/1.5 Inter, sans-serif; text-align: left; }
     #modal-monk-desc p + p { margin-top: 8px; }
     #modal-monk-desc strong { color: #555; }
-    .modal-footer {
-      display: flex; flex: 0 0 auto; justify-content: center; padding: 13px;
-      border-top: 1px solid #f1f0ed; background: rgba(255,255,255,.96);
-    }
-    #modal-monk-gmaps {
+    .monk-popup-gmaps {
       display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-      padding: 11px 24px; border-radius: 999px; background: #111; color: white;
-      font: 500 12px Inter, sans-serif; text-decoration: none;
-      box-shadow: 0 3px 8px rgba(0,0,0,.16); transition: background .18s;
+      margin-top: 12px; padding: 9px 14px; border-radius: 999px;
+      background: #111; color: white; font: 500 11px Inter, sans-serif;
+      text-decoration: none; transition: background .18s;
     }
-    #modal-monk-gmaps:hover { background: #333; }
+    .monk-popup-gmaps:hover { background: #333; }
+    .monk-popup-read, .modal-footer { display: none; }
+    .monk-popup-title-row { display: contents; }
+    .monk-popup-icon { display: none; }
 
     .maplibregl-popup-content {
       width: 240px; padding: 0 !important; overflow: hidden; border-radius: 9px;
@@ -172,38 +172,204 @@
       z-index: 2; padding: 3px 8px; color: #fff !important; font-size: 19px;
       text-shadow: 0 1px 4px rgba(0,0,0,.8);
     }
-    @media (max-width: 760px) {
-      body.monk-modal-open .maplibregl-popup { display: none; }
-    }
     .maplibregl-popup-tip { border-top-color: white; border-bottom-color: white; }
 
+    @media (min-width: 761px) {
+      .app-header { padding: 26px 22px 20px 12px; }
+      .header-actions .language-switch { order: 1; }
+      .header-actions .reset-btn { order: 2; }
+      .monks-panel {
+        top: 88px; bottom: 13px; left: 12px; width: min(380px, calc(100vw - 32px));
+        padding: 16px; border: 0; border-radius: 9px; background: #fff;
+        box-shadow: 0 4px 18px rgba(0,0,0,.08); backdrop-filter: none;
+      }
+      .panel-intro { border: 0; background: transparent; }
+      .monk-card {
+        border-color: transparent; border-radius: 8px; background: transparent;
+        box-shadow: none;
+      }
+      .monk-card:hover { background: #f8f7f4; }
+      .monk-card[aria-current="true"] {
+        border-color: #929292 !important; background: #fff !important;
+        box-shadow: none !important;
+      }
+      .card-copy h3 { font-size: 21px; }
+      .monk-detail-modal {
+        top: 88px; bottom: 13px; left: calc(20px + min(380px, calc(100vw - 32px)));
+        width: min(386px, calc(100vw - min(380px, calc(100vw - 32px)) - 40px));
+      }
+      .modal-content { padding-top: 36px; }
+      #modal-monk-index { margin-bottom: 24px; }
+      #modal-monk-name { font-size: 32px; }
+      #modal-monk-desc { text-align: center; }
+      .custom-monk-popup .monk-popup-image { height: 150px; }
+      .custom-monk-popup .monk-popup-details { padding: 18px 14px 14px; }
+      .custom-monk-popup .monk-popup-title {
+        margin: 0 0 6px; font-size: 22px; line-height: 1.2;
+      }
+      .custom-monk-popup .monk-popup-region { margin: 0 0 12px; font-size: 12px; }
+      .custom-monk-popup .monk-popup-summary { font-size: 12px; line-height: 1.45; }
+      .custom-monk-popup .monk-popup-gmaps {
+        display: flex; width: min(185px, 100%); margin: 14px auto 0;
+        padding: 12px 14px; background: #f0ede6; color: #111;
+      }
+    }
+
     @media (max-width: 760px) {
-      .app-header { min-height: 60px; padding: 11px 12px; }
-      .app-title { max-width: 52vw; font-size: clamp(20px, 4.2vw, 30px); letter-spacing: -.6px; }
-      .header-actions { gap: 7px; }
-      .reset-btn { min-width: 65px; padding: 9px 14px; font-size: 12px; }
-      .language-switch { gap: 0; padding: 3px; }
-      .language-switch span { width: 26px; height: 26px; font-size: 14px; }
-      .monks-panel { top: auto; bottom: 10px; left: 10px; width: min(310px, calc(100vw - 20px)); height: 43vh; padding: 10px; gap: 9px; }
-      .panel-intro { flex-basis: 48px; padding: 0 12px; font-size: 20px; }
-      .search-wrap { flex-basis: 36px; }
-      .search-icon { top: 8px; left: 12px; width: 18px; height: 18px; }
-      #search-input { padding-left: 38px; font-size: 12px; }
-      #monks-list { gap: 8px; }
-      .monk-card { flex-basis: 64px; grid-template-columns: 34px 38px minmax(0,1fr); gap: 7px; padding: 5px 8px; }
-      .card-number { font-size: 31px; }
-      .card-icon-frame { width: 38px; height: 38px; }
-      .card-copy h3 { font-size: clamp(14px, 3.7vw, 19px); }
-      .card-copy p { font-size: 10px; }
-      .monk-detail-modal { top: 68px; bottom: 12px; left: 50%; width: min(434px, calc(100vw - 24px)); transform: translateX(-50%); }
-      .modal-content { padding: 22px 23px 16px; }
-      #modal-monk-name { margin-bottom: 20px; }
-      .modal-icon { width: 128px; height: 128px; margin-bottom: 22px; }
+      body.monk-modal-open .maplibregl-popup { display: none; }
+      .app-header { min-height: 112px; justify-content: center; padding: 13px 56px 10px; }
+      .app-title {
+        max-width: 260px; font-size: 21px; line-height: 1.15;
+        text-align: center; letter-spacing: -.4px;
+      }
+      .header-actions { position: static; }
+      .header-actions .reset-btn {
+        position: absolute; top: 80px; left: 50%; display: block; min-width: 0;
+        padding: 9px 22px; transform: translateX(-50%);
+        background: #bdbdbd; color: white; font-size: 13px;
+      }
+      .header-actions .reset-btn:hover { background: #aaa; transform: translateX(-50%); }
+      .language-switch {
+        position: absolute; top: 15px; right: 12px; display: flex;
+        width: 42px; height: 42px; align-items: center; justify-content: center;
+        padding: 0; border: 0; border-radius: 50%; background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,.12);
+      }
+      .language-switch span { display: none; }
+      .language-switch span:first-child { display: grid; width: 100%; height: 100%; font-size: 18px; }
+      .mobile-list-toggle {
+        position: absolute; top: 15px; left: 12px; display: grid; width: 42px; height: 42px; place-items: center;
+        padding: 0; border: 0; border-radius: 50%; background: white;
+        color: #111; box-shadow: 0 2px 10px rgba(0,0,0,.12); cursor: pointer;
+      }
+      .mobile-list-toggle svg { width: 23px; height: 23px; }
+      .monks-panel {
+        z-index: 25; top: 78px; right: 0; bottom: 0; left: 0; display: none;
+        width: 100%; height: auto; gap: 12px; padding: 14px 18px 20px;
+        border: 0; border-radius: 20px 20px 0 0; background: rgba(255,255,255,.98);
+        box-shadow: 0 -4px 24px rgba(0,0,0,.12); backdrop-filter: blur(8px);
+      }
+      body.mobile-list-open .monks-panel { display: flex; }
+      .mobile-list-close {
+        display: grid; flex: 0 0 36px; align-self: center; width: 44px; height: 36px;
+        place-items: center; padding: 0; border: 0; border-radius: 999px;
+        background: #a77a43; color: white; cursor: pointer;
+      }
+      .mobile-list-close svg { width: 17px; height: 17px; }
+      .panel-intro {
+        flex: 0 0 36px; padding: 0; border: 0; border-radius: 0;
+        font-size: 23px;
+      }
+      .mobile-reset-btn {
+        display: block;
+        align-self: flex-start; padding: 0; border: 0; background: transparent;
+        color: #777; font: 12px Inter, sans-serif; text-decoration: underline; cursor: pointer;
+      }
+      .search-wrap { flex-basis: 38px; }
+      .search-icon { top: 9px; left: 13px; width: 19px; height: 19px; }
+      #search-input { padding-left: 40px; font-size: 13px; }
+      #monks-list { gap: 3px; padding-bottom: env(safe-area-inset-bottom); }
+      .monk-card {
+        flex: 0 0 74px; grid-template-columns: 48px minmax(0,1fr);
+        gap: 14px; padding: 8px 10px; border: 0; border-bottom: 1px solid #f0eee9;
+        border-radius: 0; background: transparent;
+      }
+      .monk-card:hover { background: #f8f6f1; }
+      .monk-card[aria-current="true"] { border-color: #f0eee9 !important; background: #f8f6f1 !important; box-shadow: none !important; }
+      .card-number { display: none; }
+      .card-icon-frame { width: 46px; height: 46px; }
+      .card-copy { text-align: left; }
+      .card-copy h3 { font-size: 19px; }
+      .card-copy p { margin-top: 4px; font-size: 11px; }
+      body.mobile-list-open .mobile-list-toggle { visibility: hidden; }
+      .maplibregl-popup.custom-monk-popup {
+        z-index: 20 !important; position: fixed !important;
+        top: auto !important; right: 0 !important; bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+        left: 0 !important; width: 100% !important; max-width: none !important; margin: 0 !important;
+        transform: none !important;
+      }
+      .maplibregl-popup.custom-monk-popup .maplibregl-popup-content {
+        width: 100%; max-height: none; overflow: visible;
+        border-radius: 0; background: transparent; box-shadow: none;
+      }
+      .maplibregl-popup.custom-monk-popup .maplibregl-popup-tip { display: none; }
+      .mobile-monk-carousel {
+        display: flex; width: 100%; gap: 14px; overflow-x: auto; overflow-y: visible;
+        padding: 0 calc((100% - min(82vw, 490px)) / 2);
+        scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none;
+        overscroll-behavior-x: contain; touch-action: pan-x pan-y;
+      }
+      .mobile-monk-carousel::-webkit-scrollbar { display: none; }
+      .mobile-monk-card {
+        position: relative; display: flex; flex: 0 0 min(82vw, 490px);
+        height: min(44vh, 350px); min-height: 270px; flex-direction: column;
+        overflow: hidden; border-radius: 18px; background: white;
+        box-shadow: 0 5px 22px rgba(0,0,0,.2); scroll-snap-align: center;
+      }
+      .mobile-card-image { position: relative; flex: 0 0 42%; min-height: 112px; background: #e8e6e0; }
+      .mobile-card-image > img { width: 100%; height: 100%; object-fit: cover; }
+      .mobile-card-number {
+        position: absolute; top: 12px; left: 15px; color: white;
+        font: 400 26px/1 'Prata', Georgia, serif; text-shadow: 0 1px 5px rgba(0,0,0,.55);
+      }
+      .mobile-card-close {
+        position: absolute; top: 10px; right: 10px; display: grid; width: 32px; height: 32px;
+        place-items: center; padding: 0; border: 0; border-radius: 50%;
+        background: rgba(0,0,0,.35); color: white; font: 24px/1 Inter, sans-serif; cursor: pointer;
+      }
+      .mobile-card-content {
+        position: relative; display: flex; flex: 1; min-height: 0; flex-direction: column;
+        align-items: flex-start; padding: 34px 18px 12px; text-align: left;
+      }
+      .mobile-card-icon {
+        position: absolute; top: -31px; left: 20px; width: 62px; height: 62px;
+        border: 3px solid white; border-radius: 50%;
+        background: #eeece8; object-fit: cover;
+      }
+      .mobile-card-name {
+        margin: 0; color: #080808; font: 400 clamp(18px, 5vw, 22px)/1.2 'Prata', Georgia, serif;
+      }
+      .mobile-card-monastery { margin: 4px 0 0; color: #777; font: 13px/1.3 Inter, sans-serif; }
+      .mobile-card-summary {
+        display: -webkit-box; flex: 0 0 auto; overflow: hidden; margin: 8px 0 8px; color: #777;
+        font: 11px/1.4 Inter, sans-serif; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+      }
+      .mobile-card-actions { display: flex; width: 100%; gap: 8px; margin-top: auto; }
+      .mobile-card-read, .mobile-card-maps {
+        display: flex; flex: 1; min-height: 42px; align-items: center; justify-content: center;
+        border: 0; border-radius: 999px; font: 500 13px Inter, sans-serif; text-decoration: none;
+      }
+      .mobile-card-read { background: #171717; color: white; cursor: pointer; }
+      .mobile-card-maps { background: #f0ede6; color: #171717; }
+      .maplibregl-ctrl-bottom-right { top: calc(50% - 105px); bottom: auto; }
+      .monk-detail-modal {
+        z-index: 30; top: 16vh; right: 0; bottom: 0; left: 0;
+        width: 100%; max-height: none; transform: none;
+        border: 0; border-radius: 24px 24px 0 0; background: white;
+      }
+      .modal-content { padding: 24px 22px 18px; text-align: center; }
+      #modal-monk-index { margin-bottom: 15px; font-size: 23px; }
+      #modal-monk-name { margin-bottom: 22px; font-size: 27px; }
+      .modal-icon { width: 132px; height: 132px; margin-bottom: 22px; }
+      #modal-monk-desc { font-size: 12px; line-height: 1.5; text-align: center; }
+      .modal-close { top: 10px; right: 12px; }
+      body.monk-modal-open .app-header { display: flex; }
+      .modal-footer {
+        display: flex; flex: 0 0 auto; gap: 8px; justify-content: center;
+        padding: 10px 16px calc(14px + env(safe-area-inset-bottom));
+        border-top: 0; background: white;
+      }
+      .modal-gmaps, .modal-close-action {
+        display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 9px;
+        min-height: 42px; padding: 10px 12px; border: 0; border-radius: 999px;
+        font: 500 12px Inter, sans-serif; text-decoration: none;
+      }
+      .modal-gmaps { background: #f0ede6; color: #171717; }
+      .modal-close-action { background: #171717; color: white; cursor: pointer; }
+      .monk-detail-modal .modal-close { display: none; }
     }
     @media (max-width: 430px) {
-      .app-title { max-width: 46vw; font-size: 20px; }
-      .language-switch span { width: 22px; height: 22px; font-size: 12px; }
-      .reset-btn { min-width: 58px; padding: 8px 11px; }
+      .app-title { max-width: 240px; font-size: 20px; }
     }
   </style>
 </head>
@@ -217,12 +383,23 @@
       <div class="language-switch" aria-hidden="true">
         <span>🇬🇧</span><span>🇬🇪</span><span>🇷🇺</span>
       </div>
+      <button id="mobile-list-toggle" class="mobile-list-toggle" type="button" aria-label="Open monastery list" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
     </div>
   </header>
 
   <main class="main-layout">
     <aside class="monks-panel" aria-label="Monastery list">
+      <button id="mobile-list-close" class="mobile-list-close" type="button" aria-label="Close monastery list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m18 6-12 12M6 6l12 12"></path>
+        </svg>
+      </button>
       <div class="panel-intro">Introduction</div>
+      <button id="mobile-reset-btn" class="mobile-reset-btn" type="button">Reset map</button>
       <label class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
           <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
@@ -249,12 +426,13 @@
       <div id="modal-monk-desc"></div>
     </div>
     <div class="modal-footer">
-      <a id="modal-monk-gmaps" href="#" target="_blank" rel="noopener noreferrer">
+      <a id="modal-monk-gmaps" class="modal-gmaps" href="#" target="_blank" rel="noopener noreferrer">
         <span>Open in Google Maps</span>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M14 3h7v7M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
         </svg>
       </a>
+      <button id="modal-close-action" class="modal-close-action" type="button">Close</button>
     </div>
   </section>
 </body>

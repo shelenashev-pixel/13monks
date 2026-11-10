@@ -1,0 +1,71 @@
+Monastery photos
+=================
+
+All downloaded image files are 960px Wikimedia Commons thumbnails. Each file
+is used under the license shown below. The corresponding Commons file page is
+the source of record for attribution and full license terms.
+
+ioane-zedazeni.jpg
+  "Zedazeni monastery, Georgia. 01.jpg" by Kober
+  CC BY-SA 4.0 - https://creativecommons.org/licenses/by-sa/4.0
+  https://commons.wikimedia.org/wiki/File:Zedazeni_monastery,_Georgia._01.jpg
+
+davit-gareja.jpg
+  "David Gareja 2, Georgia.jpg" by Vyacheslav Argenberg
+  CC BY 4.0 - https://creativecommons.org/licenses/by/4.0
+  https://commons.wikimedia.org/wiki/File:David_Gareja_2,_Georgia.jpg
+
+shio-mgvime.jpg
+  "Shio-Mgvime monastery, June, 2018-3.jpg" by Alexey Komarov
+  CC BY-SA 4.0 - https://creativecommons.org/licenses/by-sa/4.0
+  https://commons.wikimedia.org/wiki/File:Shio-Mgvime_monastery,_June,_2018-3.jpg
+
+abibos-nekresi.jpg
+  "Nekresi monastery 07.jpg" by Bernard Gagnon
+  CC BY 4.0 - https://creativecommons.org/licenses/by/4.0
+  https://commons.wikimedia.org/wiki/File:Nekresi_monastery_07.jpg
+
+anton-martqopi.jpg
+  "Martkopi monastery as seen from St Anton's Tower.jpg" by Aleksey Muhranoff
+  CC BY-SA 3.0 - https://creativecommons.org/licenses/by-sa/3.0
+  https://commons.wikimedia.org/wiki/File:Martkopi_monastery_as_seen_from_St_Anton%27s_Tower.jpg
+
+stepane-khirsa.jpg
+  "Khirsa Monastery in Tibaani.jpg" by Jelger Groeneveld
+  CC BY 4.0 - https://creativecommons.org/licenses/by/4.0
+  https://commons.wikimedia.org/wiki/File:Khirsa_Monastery_in_Tibaani.jpg
+
+zenon-ikhalto.jpg
+  "Church of the Transfiguration (Ikalto) 01.jpg" by Bernard Gagnon
+  CC BY 4.0 - https://creativecommons.org/licenses/by/4.0
+  https://commons.wikimedia.org/wiki/File:Church_of_the_Transfiguration_(Ikalto)_01.jpg
+
+ioseb-alaverdi.jpg
+  "Alaverdi Monastery 01.jpg" by Bernard Gagnon
+  CC BY 4.0 - https://creativecommons.org/licenses/by/4.0
+  https://commons.wikimedia.org/wiki/File:Alaverdi_Monastery_01.jpg
+
+isidor-samtavisi.jpg
+  "Samtavisi Cathedral, panoramic view from the east. Georgia.jpg" by Kober
+  CC0 - https://creativecommons.org/publicdomain/zero/1.0
+  https://commons.wikimedia.org/wiki/File:Samtavisi_Cathedral,_panoramic_view_from_the_east._Georgia.jpg
+
+tate-dzveli-shuamta.jpg
+  "Dzveli Shuamta monastery-2.jpg" by Aleksey Muhranoff
+  CC BY-SA 3.0 - https://creativecommons.org/licenses/by-sa/3.0
+  https://commons.wikimedia.org/wiki/File:Dzveli_Shuamta_monastery-2.jpg
+
+mikhail-ulumbo.jpg
+  "Ulumbo monastery, Shida Kartli, Georgia.jpg" by Aleksey Muhranoff
+  CC BY-SA 3.0 - https://creativecommons.org/licenses/by-sa/3.0
+  https://commons.wikimedia.org/wiki/File:Ulumbo_monastery,_Shida_Kartli,_Georgia.jpg
+
+piros-breti.jpg
+  "Breti monastery (Photo A. Muhranoff, 2011).jpg" by Aleksey Muhranoff
+  CC BY-SA 3.0 - https://creativecommons.org/licenses/by-sa/3.0
+  https://commons.wikimedia.org/wiki/File:Breti_monastery_(Photo_A._Muhranoff,_2011).jpg
+
+ise-tsilkani.jpg
+  "Tsilkani cathedral, Georgia 01.jpg" by Kober
+  CC BY-SA 4.0 - https://creativecommons.org/licenses/by-sa/4.0
+  https://commons.wikimedia.org/wiki/File:Tsilkani_cathedral,_Georgia_01.jpg
