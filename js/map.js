@@ -28,19 +28,28 @@ export function initMap(monks, onMarkerClick) {
 
     // Кастомный маркер с крестом
     const el = document.createElement('div');
-    el.className = 'w-7 h-7 cursor-pointer';
+    el.className = 'w-11 h-11 cursor-pointer flex items-center justify-center';
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
     const markerIcon = document.createElement('span');
-    markerIcon.className = 'w-full h-full bg-stone-900 border-2 border-white rounded-full flex items-center justify-center text-white text-xs shadow-lg hover:scale-110 transition-transform';
+    markerIcon.className = 'w-7 h-7 bg-stone-900 border-2 border-white rounded-full flex items-center justify-center text-white text-xs shadow-lg hover:scale-110 transition-transform';
     markerIcon.textContent = '✝';
     el.appendChild(markerIcon);
 
     const marker = new maplibregl.Marker({ element: el })
       .setLngLat(monk.coordinates)
       .addTo(mapInstance);
+    marker.getElement().setAttribute('aria-label', `Show ${monk.name} on map`);
 
-    marker.getElement().addEventListener('click', (event) => {
+    const selectMarker = (event) => {
       event.stopPropagation();
-      if (onMarkerClick) onMarkerClick(monk.id);
+      onMarkerClick?.(monk.id);
+    };
+    marker.getElement().addEventListener('click', selectMarker);
+    marker.getElement().addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      selectMarker(event);
     });
 
     markersMap[monk.id] = { marker, monk };

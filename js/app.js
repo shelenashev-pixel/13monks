@@ -124,4 +124,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeBtn.addEventListener('click', closeDetailModal);
   }
   document.getElementById('modal-close-action')?.addEventListener('click', closeDetailModal);
+  document.addEventListener('keydown', (event) => {
+    const modal = document.getElementById('monk-detail-modal');
+    if (event.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      event.preventDefault();
+      closeDetailModal();
+    }
+  });
 });
