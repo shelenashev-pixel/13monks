@@ -135,7 +135,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           <h2 class="mobile-card-name">${itemIndex + 1} | ${item.name}</h2>
           <p class="mobile-card-monastery">${item.monastery}</p>
           <div class="mobile-card-actions">
-            ${item.gmapsUrl ? `<a class="mobile-card-maps" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>` : ''}
+            ${item.gmapsUrl ? `<a class="mobile-card-maps" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer"><span>Open in Google Maps</span></a>` : ''}
             <button class="mobile-card-read" type="button" data-action="read">Read more</button>
           </div>
         </div>
