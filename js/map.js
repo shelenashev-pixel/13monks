@@ -5,7 +5,7 @@ let currentActivePopup = null;
 export function initMap(monks, onMarkerClick) {
   mapInstance = new maplibregl.Map({
     container: 'map',
-    style: 'https://tiles.openfreemap.org/styles/liberty',
+    style: './assets/flyd8nvq0.json',
     center: [44.8, 41.9],
     zoom: 7.5,
     attributionControl: false
