@@ -2,6 +2,7 @@ import { renderCards, highlightActiveCard } from './cards.js';
 import { initMap, flyToMonk, showPopup, closePopup, resetMapView } from './map.js';
 
 let allMonksData = [];
+let selectionRevision = 0;
 
 function openMonkModal(monk, index) {
   const modal = document.getElementById('monk-detail-modal');
@@ -48,6 +49,7 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   const monk = allMonksData.find(m => m.id === monkId);
   if (!monk) return;
 
+  const revision = ++selectionRevision;
   const originalIndex = allMonksData.findIndex(m => m.id === monk.id) + 1;
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
 
@@ -57,27 +59,35 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   setMobileListOpen(false);
 
   if (fromSwipe && isMobile) {
-    flyToMonk(monk, { duration: 450 });
+    void flyToMonk(monk, { duration: 450 }).catch((error) => {
+      console.error(`Failed to navigate to ${monk.name}`, error);
+    });
     return;
   }
 
   if (!isMobile) openMonkModal(monk, originalIndex);
 
-  flyToMonk(monk, fromSwipe ? { duration: 450 } : undefined);
-  showPopup(
-    monk,
-    () => {
-      closeDetailModal();
-      highlightActiveCard(null);
-    },
-    () => openMonkModal(monk, originalIndex),
-    originalIndex,
-    (targetIndex) => {
-      const nextMonk = allMonksData[targetIndex];
-      if (nextMonk) handleSelectMonk(nextMonk.id, { fromSwipe: true });
-    },
-    allMonksData
-  );
+  void flyToMonk(monk, fromSwipe ? { duration: 450 } : undefined)
+    .then(() => {
+      if (revision !== selectionRevision) return;
+      showPopup(
+        monk,
+        () => {
+          closeDetailModal();
+          highlightActiveCard(null);
+        },
+        () => openMonkModal(monk, originalIndex),
+        originalIndex,
+        (targetIndex) => {
+          const nextMonk = allMonksData[targetIndex];
+          if (nextMonk) handleSelectMonk(nextMonk.id, { fromSwipe: true });
+        },
+        allMonksData
+      );
+    })
+    .catch((error) => {
+      console.error(`Failed to navigate to ${monk.name}`, error);
+    });
 }
 
 // Инициализация при загрузке страницы
@@ -124,6 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const resetMap = () => {
+    selectionRevision += 1;
     if (searchInput) searchInput.value = '';
     renderFilteredCards();
     resetMapView();

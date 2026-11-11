@@ -56,10 +56,10 @@ export function initMap(monks, onMarkerClick) {
 }
 
 export function flyToMonk(monk, { duration } = {}) {
-  if (!mapInstance || !monk || !monk.coordinates) return;
+  if (!mapInstance || !monk || !monk.coordinates) return Promise.resolve();
 
-  mapInstance.resize();
   mapInstance.stop();
+  mapInstance.resize();
   setActiveMarker(monk);
 
   const cameraOptions = {
@@ -67,11 +67,27 @@ export function flyToMonk(monk, { duration } = {}) {
     offset: window.innerWidth > 760 ? [Math.min(window.innerWidth * 0.33, 450), 165] : [0, 0],
     zoom: 11,
     essential: true,
-    speed: 1.2
+    duration: duration ?? 850
   };
-  if (duration !== undefined) cameraOptions.duration = duration;
-  mapInstance.flyTo(cameraOptions);
-  currentActivePopup?.setLngLat(monk.coordinates);
+
+  return new Promise((resolve) => {
+    const startFlight = () => {
+      const finishFlight = () => resolve();
+      mapInstance.once('moveend', finishFlight);
+      mapInstance.flyTo(cameraOptions);
+      currentActivePopup?.setLngLat(monk.coordinates);
+      if (!mapInstance.isMoving()) {
+        mapInstance.off('moveend', finishFlight);
+        resolve();
+      }
+    };
+
+    if (mapInstance.isStyleLoaded()) {
+      startFlight();
+    } else {
+      mapInstance.once('load', startFlight);
+    }
+  });
 }
 
 export function setActiveMarker(monk) {
