@@ -55,7 +55,7 @@ export function renderCards(monks, allMonks, onSelect) {
 /**
  * Подсветка активной карточки (пергаментный фон)
  */
-export function highlightActiveCard(id) {
+export function highlightActiveCard(id, { scroll = true } = {}) {
   document.querySelectorAll('.monk-card').forEach((card) => {
     card.removeAttribute('aria-current');
   });
@@ -65,6 +65,6 @@ export function highlightActiveCard(id) {
   const activeCard = document.getElementById(`card-${id}`);
   if (activeCard) {
     activeCard.setAttribute('aria-current', 'true');
-    activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (scroll) activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }

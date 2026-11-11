@@ -1,5 +1,5 @@
 import { renderCards, highlightActiveCard } from './cards.js';
-import { initMap, flyToMonk, showPopup, closePopup, resetMapView } from './map.js';
+import { initMap, flyToMonk, setActiveMarker, showPopup, closePopup, resetMapView } from './map.js';
 
 let allMonksData = [];
 
@@ -52,10 +52,15 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   const originalIndex = allMonksData.findIndex(m => m.id === monk.id) + 1;
 
   // 1. Подсветка в левом списке
-  highlightActiveCard(monk.id);
+  highlightActiveCard(monk.id, { scroll: !fromSwipe });
 
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
   setMobileListOpen(false);
+
+  if (fromSwipe && isMobile) {
+    setActiveMarker(monk);
+    return;
+  }
 
   // 2. Desktop opens details immediately; mobile shows the compact map card first.
   if (!isMobile) openMonkModal(monk, originalIndex);

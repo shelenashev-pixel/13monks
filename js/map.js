@@ -62,12 +62,7 @@ export function initMap(monks, onMarkerClick) {
 export function flyToMonk(monk, { duration } = {}) {
   if (!mapInstance || !monk || !monk.coordinates) return;
 
-  Object.values(markersMap).forEach(({ marker, monk: markerMonk }) => {
-    const markerIcon = marker.getElement().firstElementChild;
-    if (markerIcon) {
-      markerIcon.style.backgroundColor = markerMonk.id === monk.id ? '#a77a43' : '';
-    }
-  });
+  setActiveMarker(monk);
 
   const cameraOptions = {
     center: monk.coordinates,
@@ -78,6 +73,16 @@ export function flyToMonk(monk, { duration } = {}) {
   };
   if (duration !== undefined) cameraOptions.duration = duration;
   mapInstance.flyTo(cameraOptions);
+}
+
+export function setActiveMarker(monk) {
+  if (!monk) return;
+  Object.values(markersMap).forEach(({ marker, monk: markerMonk }) => {
+    const markerIcon = marker.getElement().firstElementChild;
+    if (markerIcon) {
+      markerIcon.style.backgroundColor = markerMonk.id === monk.id ? '#a77a43' : '';
+    }
+  });
 }
 
 // Отображение всплывающей карточки над монастырем
@@ -169,29 +174,38 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
 
   let scrollTimer;
   if (isMobile) {
-    const activeCard = popupContent.querySelector(`[data-monk-index="${activeIndex}"]`);
     let isCentering = false;
-    let pointerStart = null;
-    let isDragging = false;
-    let previousScrollBehavior = '';
-    ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((eventName) => {
-      popupContent.addEventListener(eventName, (event) => event.stopPropagation(), { passive: eventName !== 'touchmove' });
-    });
+    let isUserTouching = false;
+    let hasUserScrolled = false;
     const selectCard = (targetIndex) => {
       if (targetIndex === activeIndex || targetIndex < 0 || targetIndex >= monks.length) return;
+      activeIndex = targetIndex;
+      popupContent.dataset.activeIndex = String(targetIndex);
+      popupContent.querySelectorAll('.mobile-monk-card').forEach((card, cardIndex) => {
+        card.setAttribute('aria-current', String(cardIndex === targetIndex));
+      });
       onSwipe?.(targetIndex);
     };
     const selectCenteredCard = () => {
       const cards = [...popupContent.querySelectorAll('.mobile-monk-card')];
-      const center = popupContent.scrollLeft + popupContent.clientWidth / 2;
+      const carouselCenter = popupContent.getBoundingClientRect().left + popupContent.clientWidth / 2;
       const target = cards.reduce((closest, card) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        return Math.abs(cardCenter - center) < Math.abs(closest.offsetLeft + closest.offsetWidth / 2 - center)
+        const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
+        const closestCenter = closest.getBoundingClientRect().left + closest.offsetWidth / 2;
+        return Math.abs(cardCenter - carouselCenter) < Math.abs(closestCenter - carouselCenter)
           ? card
           : closest;
       }, cards[0]);
       const targetIndex = Number(target?.dataset.monkIndex);
       if (Number.isInteger(targetIndex)) selectCard(targetIndex);
+    };
+    const settleUserScroll = () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        if (isCentering || isUserTouching || !hasUserScrolled) return;
+        hasUserScrolled = false;
+        selectCenteredCard();
+      }, 150);
     };
 
     popupContent.querySelectorAll('.mobile-card-read').forEach((button) => {
@@ -204,93 +218,37 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       button.addEventListener('click', () => popup.remove());
     });
     popupContent.addEventListener('scroll', () => {
-      if (isCentering || pointerStart) return;
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(selectCenteredCard, 80);
+      if (isCentering || (!isUserTouching && !hasUserScrolled)) return;
+      hasUserScrolled = true;
+      settleUserScroll();
     }, { passive: true });
-    popupContent.addEventListener('scrollend', () => {
-      if (isCentering || pointerStart) return;
+    popupContent.addEventListener('touchstart', (event) => {
+      event.stopPropagation();
+      if (event.touches.length !== 1 || event.target.closest('a, button')) return;
+      isUserTouching = true;
+      hasUserScrolled = false;
       clearTimeout(scrollTimer);
-      selectCenteredCard();
     }, { passive: true });
-    popupContent.addEventListener('pointerdown', (event) => {
-      if (event.button !== 0 || event.target.closest('a, button')) {
-        pointerStart = null;
-        return;
-      }
-      pointerStart = {
-        id: event.pointerId,
-        x: event.clientX,
-        y: event.clientY,
-        scrollLeft: popupContent.scrollLeft
-      };
-      isDragging = false;
-      previousScrollBehavior = popupContent.style.scrollBehavior;
-      popupContent.style.scrollBehavior = 'auto';
-      clearTimeout(scrollTimer);
-      popupContent.setPointerCapture(event.pointerId);
+    popupContent.addEventListener('touchmove', (event) => {
       event.stopPropagation();
-    });
-    popupContent.addEventListener('pointermove', (event) => {
-      if (!pointerStart || event.pointerId !== pointerStart.id) return;
-      const deltaX = event.clientX - pointerStart.x;
-      const deltaY = event.clientY - pointerStart.y;
-      if (!isDragging && Math.abs(deltaX) > 6 && Math.abs(deltaX) > Math.abs(deltaY)) {
-        isDragging = true;
-      }
-      if (!isDragging) return;
-      event.preventDefault();
-      const maxScroll = popupContent.scrollWidth - popupContent.clientWidth;
-      popupContent.scrollLeft = Math.max(0, Math.min(maxScroll, pointerStart.scrollLeft - deltaX));
+    }, { passive: true });
+    popupContent.addEventListener('touchend', (event) => {
       event.stopPropagation();
-    }, { passive: false });
-    popupContent.addEventListener('pointerup', (event) => {
-      if (!pointerStart || event.pointerId !== pointerStart.id) return;
-      const deltaX = event.clientX - pointerStart.x;
-      const deltaY = event.clientY - pointerStart.y;
-      const wasDragging = isDragging;
-      pointerStart = null;
-      isDragging = false;
-      popupContent.style.scrollBehavior = previousScrollBehavior;
+      if (!isUserTouching) return;
+      isUserTouching = false;
+      if (hasUserScrolled) settleUserScroll();
+    }, { passive: true });
+    popupContent.addEventListener('touchcancel', (event) => {
       event.stopPropagation();
-      if (!wasDragging || Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) {
-        if (wasDragging && activeCard) {
-          popupContent.scrollTo({
-            left: activeCard.offsetLeft - (popupContent.clientWidth - activeCard.offsetWidth) / 2,
-            behavior: 'smooth'
-          });
-        }
-        return;
-      }
-      const targetIndex = activeIndex + (deltaX < 0 ? 1 : -1);
-      if (targetIndex === activeIndex || targetIndex < 0 || targetIndex >= monks.length) {
-        if (activeCard) {
-          popupContent.scrollTo({
-            left: activeCard.offsetLeft - (popupContent.clientWidth - activeCard.offsetWidth) / 2,
-            behavior: 'smooth'
-          });
-        }
-        return;
-      }
-      selectCard(targetIndex);
-    });
-    popupContent.addEventListener('pointercancel', (event) => {
-      if (!pointerStart || event.pointerId !== pointerStart.id) return;
-      pointerStart = null;
-      isDragging = false;
-      popupContent.style.scrollBehavior = previousScrollBehavior;
-      event.stopPropagation();
-      if (activeCard) {
-        popupContent.scrollTo({
-          left: activeCard.offsetLeft - (popupContent.clientWidth - activeCard.offsetWidth) / 2,
-          behavior: 'smooth'
-        });
-      }
-    });
+      if (!isUserTouching) return;
+      isUserTouching = false;
+      if (hasUserScrolled) settleUserScroll();
+    }, { passive: true });
 
     popup.on('open', () => {
       const carousel = popupContent;
       const centerActiveCard = () => {
+        const activeCard = carousel.querySelector(`[data-monk-index="${activeIndex}"]`);
         if (!activeCard) return;
         isCentering = true;
         const currentScrollBehavior = carousel.style.scrollBehavior;
