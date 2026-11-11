@@ -149,7 +149,7 @@
     .map-pin {
       display: block; width: 22px; height: 22px; object-fit: contain;
       filter: drop-shadow(0 4px 8px rgba(17,17,17,.22));
-      transition: transform .18s ease, filter .18s ease;
+      transition: width .18s ease, height .18s ease, transform .18s ease, filter .18s ease;
     }
     .map-pin.is-active {
       transform: scale(1.14); filter: drop-shadow(0 5px 10px rgba(167,122,67,.48));
@@ -296,6 +296,9 @@
 
     @media (max-width: 760px) {
       body.monk-modal-open .maplibregl-popup { display: none; }
+      .map-pin-wrap { width: 40px; height: 40px; }
+      .map-pin { width: 32px; height: 32px; }
+      .map-pin.is-active { width: 40px; height: 40px; transform: none; }
       .app-header {
         min-height: 112px; justify-content: center;
         padding: calc(13px + env(safe-area-inset-top)) 56px 10px;
