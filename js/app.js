@@ -1,5 +1,5 @@
 import { renderCards, highlightActiveCard } from './cards.js';
-import { initMap, flyToMonk, setActiveMarker, showPopup, closePopup, resetMapView } from './map.js';
+import { initMap, flyToMonk, showPopup, closePopup, resetMapView } from './map.js';
 
 let allMonksData = [];
 
@@ -58,7 +58,7 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   setMobileListOpen(false);
 
   if (fromSwipe && isMobile) {
-    setActiveMarker(monk);
+    flyToMonk(monk, { duration: 450 });
     return;
   }
 

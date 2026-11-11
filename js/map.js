@@ -73,6 +73,7 @@ export function flyToMonk(monk, { duration } = {}) {
   };
   if (duration !== undefined) cameraOptions.duration = duration;
   mapInstance.flyTo(cameraOptions);
+  currentActivePopup?.setLngLat(monk.coordinates);
 }
 
 export function setActiveMarker(monk) {
@@ -177,6 +178,8 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     let isCentering = false;
     let isUserTouching = false;
     let hasUserScrolled = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
     const selectCard = (targetIndex) => {
       if (targetIndex === activeIndex || targetIndex < 0 || targetIndex >= monks.length) return;
       activeIndex = targetIndex;
@@ -224,9 +227,11 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     }, { passive: true });
     popupContent.addEventListener('touchstart', (event) => {
       event.stopPropagation();
-      if (event.touches.length !== 1 || event.target.closest('a, button')) return;
+      if (event.touches.length !== 1) return;
       isUserTouching = true;
       hasUserScrolled = false;
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
       clearTimeout(scrollTimer);
     }, { passive: true });
     popupContent.addEventListener('touchmove', (event) => {
@@ -236,13 +241,34 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       event.stopPropagation();
       if (!isUserTouching) return;
       isUserTouching = false;
-      if (hasUserScrolled) settleUserScroll();
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - touchStartX;
+      const deltaY = touch.clientY - touchStartY;
+      if (hasUserScrolled) {
+        settleUserScroll();
+      } else if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
+        const targetIndex = activeIndex + (deltaX < 0 ? 1 : -1);
+        const targetCard = popupContent.querySelector(`[data-monk-index="${targetIndex}"]`);
+        if (targetCard) {
+          isCentering = true;
+          popupContent.scrollLeft = targetCard.offsetLeft - (popupContent.clientWidth - targetCard.offsetWidth) / 2;
+          selectCard(targetIndex);
+          requestAnimationFrame(() => {
+            isCentering = false;
+          });
+        }
+      }
     }, { passive: true });
     popupContent.addEventListener('touchcancel', (event) => {
       event.stopPropagation();
       if (!isUserTouching) return;
       isUserTouching = false;
       if (hasUserScrolled) settleUserScroll();
+    }, { passive: true });
+    popupContent.addEventListener('wheel', (event) => {
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+      hasUserScrolled = true;
+      settleUserScroll();
     }, { passive: true });
 
     popup.on('open', () => {

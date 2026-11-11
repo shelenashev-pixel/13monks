@@ -297,7 +297,7 @@
         display: flex; width: 100%; gap: 14px; overflow-x: auto; overflow-y: visible;
         padding: 0 calc((100% - min(82vw, 490px)) / 2);
         scroll-snap-type: x mandatory; scrollbar-width: none;
-        overscroll-behavior-x: contain; touch-action: pan-x;
+        -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; touch-action: pan-x;
       }
       .mobile-monk-carousel::-webkit-scrollbar { display: none; }
       .mobile-monk-card {
