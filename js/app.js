@@ -70,6 +70,7 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   void flyToMonk(monk, fromSwipe ? { duration: 450 } : undefined)
     .then(() => {
       if (revision !== selectionRevision) return;
+      let popupSelectionRevision = revision;
       showPopup(
         monk,
         () => {
@@ -79,8 +80,11 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
         () => openMonkModal(monk, originalIndex),
         originalIndex,
         (targetIndex) => {
+          if (popupSelectionRevision !== selectionRevision) return;
           const nextMonk = allMonksData[targetIndex];
-          if (nextMonk) handleSelectMonk(nextMonk.id, { fromSwipe: true });
+          if (!nextMonk) return;
+          handleSelectMonk(nextMonk.id, { fromSwipe: true });
+          popupSelectionRevision = selectionRevision;
         },
         allMonksData
       );

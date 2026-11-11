@@ -333,27 +333,23 @@
       .card-copy h3 { font-size: 19px; }
       .card-copy p { margin-top: 4px; font-size: 11px; }
       body.mobile-list-open .mobile-list-toggle { visibility: hidden; }
-      .maplibregl-popup.custom-monk-popup {
-        z-index: 20 !important; position: fixed !important;
-        top: auto !important; right: 0 !important; bottom: calc(8px + env(safe-area-inset-bottom)) !important;
-        left: 0 !important; width: 100% !important; max-width: none !important; margin: 0 !important;
-        transform: none !important;
+      #mobile-card-overlay {
+        position: fixed; z-index: 25; right: 0; bottom: calc(8px + env(safe-area-inset-bottom)); left: 0;
+        overflow: hidden; pointer-events: none; contain: layout paint;
       }
-      .maplibregl-popup.custom-monk-popup .maplibregl-popup-content {
-        width: 100%; max-height: none; overflow: visible;
-        border-radius: 0; background: transparent; box-shadow: none;
-      }
-      .maplibregl-popup.custom-monk-popup .maplibregl-popup-tip { display: none; }
+      #mobile-card-overlay[hidden] { display: none; }
+      body.monk-modal-open #mobile-card-overlay { visibility: hidden; }
       .mobile-monk-carousel {
         display: flex; width: 100%; gap: 14px; overflow-x: auto; overflow-y: visible;
         padding: 0 calc((100% - min(82vw, 490px)) / 2);
         scroll-snap-type: x mandatory; scrollbar-width: none;
         -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; touch-action: pan-x;
+        pointer-events: auto;
       }
       .mobile-monk-carousel::-webkit-scrollbar { display: none; }
       .mobile-monk-card {
         position: relative; display: flex; flex: 0 0 min(82vw, 490px);
-        height: min(55vh, 350px); height: min(55dvh, 350px); min-height: 270px; flex-direction: column;
+        height: min(55vh, 350px); height: min(55svh, 350px); min-height: 270px; flex-direction: column;
         overflow: hidden; border-radius: 18px; background: white;
         box-shadow: 0 5px 22px rgba(0,0,0,.2); scroll-snap-align: center; scroll-snap-stop: always;
       }
@@ -434,6 +430,7 @@
 </head>
 <body>
   <div id="map" aria-label="Map showing monastery locations"></div>
+  <div id="mobile-card-overlay" hidden></div>
 
   <header class="app-header">
     <h1 class="app-title">13 Assyrian fathers in Georgia</h1>

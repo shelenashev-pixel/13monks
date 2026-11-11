@@ -1,6 +1,9 @@
 let mapInstance = null;
 let markersMap = {};
 let currentActivePopup = null;
+let currentMobileCardOverlay = null;
+let currentMobileCardOnClose = null;
+let currentMobileCardCleanup = null;
 
 export function initMap(monks, onMarkerClick) {
   mapInstance = new maplibregl.Map({
@@ -185,22 +188,22 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     `;
   }
 
-  const popup = new maplibregl.Popup({
-    offset: 40,
-    closeButton: !isMobile,
-    closeOnClick: false,
-    className: 'custom-monk-popup'
-  })
-    .setLngLat(monk.coordinates)
-    .setDOMContent(popupContent);
+  const popup = isMobile
+    ? null
+    : new maplibregl.Popup({
+      offset: 40,
+      closeButton: true,
+      closeOnClick: false,
+      className: 'custom-monk-popup'
+    })
+      .setLngLat(monk.coordinates)
+      .setDOMContent(popupContent);
 
   let scrollTimer;
   if (isMobile) {
-    let isCentering = false;
-    let isUserTouching = false;
-    let hasUserScrolled = false;
-    let touchStartX = 0;
-    let touchStartY = 0;
+    let isMobileOverlayActive = true;
+    let isProgrammaticScroll = true;
+    let programmaticScrollTimer;
     const selectCard = (targetIndex) => {
       if (targetIndex === activeIndex || targetIndex < 0 || targetIndex >= monks.length) return;
       activeIndex = targetIndex;
@@ -210,8 +213,30 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       });
       onSwipe?.(targetIndex);
     };
+    const centerCard = (targetIndex) => {
+      const card = popupContent.querySelector(`[data-monk-index="${targetIndex}"]`);
+      if (!card) return;
+      const carouselRect = popupContent.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const targetScrollLeft = popupContent.scrollLeft + cardRect.left - carouselRect.left
+        - (popupContent.clientWidth - cardRect.width) / 2;
+
+      isProgrammaticScroll = true;
+      clearTimeout(programmaticScrollTimer);
+      popupContent.scrollLeft = targetScrollLeft;
+      const carouselCenter = popupContent.getBoundingClientRect().left + popupContent.clientWidth / 2;
+      const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
+      if (Math.abs(cardCenter - carouselCenter) < 1) {
+        isProgrammaticScroll = false;
+      } else {
+        programmaticScrollTimer = setTimeout(() => {
+          isProgrammaticScroll = false;
+        }, 400);
+      }
+    };
     const selectCenteredCard = () => {
       const cards = [...popupContent.querySelectorAll('.mobile-monk-card')];
+      if (!cards.length) return;
       const carouselCenter = popupContent.getBoundingClientRect().left + popupContent.clientWidth / 2;
       const target = cards.reduce((closest, card) => {
         const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
@@ -220,14 +245,21 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           ? card
           : closest;
       }, cards[0]);
-      const targetIndex = Number(target?.dataset.monkIndex);
-      if (Number.isInteger(targetIndex)) selectCard(targetIndex);
+      let targetIndex = Number(target?.dataset.monkIndex);
+      if (!Number.isInteger(targetIndex)) return;
+      if (Math.abs(targetIndex - activeIndex) > 1) {
+        targetIndex = activeIndex + Math.sign(targetIndex - activeIndex);
+        centerCard(targetIndex);
+      }
+      selectCard(targetIndex);
+    };
+    const centerActiveCard = () => {
+      centerCard(activeIndex);
     };
     const settleUserScroll = () => {
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
-        if (isCentering || isUserTouching || !hasUserScrolled) return;
-        hasUserScrolled = false;
+        if (!isMobileOverlayActive || isProgrammaticScroll) return;
         selectCenteredCard();
       }, 150);
     };
@@ -239,75 +271,49 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       });
     });
     popupContent.querySelectorAll('.mobile-card-close').forEach((button) => {
-      button.addEventListener('click', () => popup.remove());
+      button.addEventListener('click', closePopup);
     });
     popupContent.addEventListener('scroll', () => {
-      if (isCentering) return;
-      hasUserScrolled = true;
-      settleUserScroll();
-    }, { passive: true });
-    popupContent.addEventListener('touchstart', (event) => {
-      event.stopPropagation();
-      if (event.touches.length !== 1) return;
-      isUserTouching = true;
-      hasUserScrolled = false;
-      touchStartX = event.touches[0].clientX;
-      touchStartY = event.touches[0].clientY;
-      clearTimeout(scrollTimer);
-    }, { passive: true });
-    popupContent.addEventListener('touchmove', (event) => {
-      event.stopPropagation();
-    }, { passive: true });
-    popupContent.addEventListener('touchend', (event) => {
-      event.stopPropagation();
-      if (!isUserTouching) return;
-      isUserTouching = false;
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - touchStartX;
-      const deltaY = touch.clientY - touchStartY;
-      if (hasUserScrolled) {
-        settleUserScroll();
-      } else if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
-        const targetIndex = activeIndex + (deltaX < 0 ? 1 : -1);
-        const targetCard = popupContent.querySelector(`[data-monk-index="${targetIndex}"]`);
-        if (targetCard) {
-          isCentering = true;
-          popupContent.scrollLeft = targetCard.offsetLeft - (popupContent.clientWidth - targetCard.offsetWidth) / 2;
-          selectCard(targetIndex);
-          requestAnimationFrame(() => {
-            isCentering = false;
-          });
+      if (!isMobileOverlayActive) return;
+      if (isProgrammaticScroll) {
+        const activeCard = popupContent.querySelector(`[data-monk-index="${activeIndex}"]`);
+        if (activeCard) {
+          const carouselRect = popupContent.getBoundingClientRect();
+          const cardRect = activeCard.getBoundingClientRect();
+          const centered = Math.abs(
+            cardRect.left + cardRect.width / 2 - (carouselRect.left + popupContent.clientWidth / 2)
+          ) < 1;
+          if (centered) {
+            clearTimeout(programmaticScrollTimer);
+            isProgrammaticScroll = false;
+          }
         }
+        return;
       }
-    }, { passive: true });
-    popupContent.addEventListener('touchcancel', (event) => {
-      event.stopPropagation();
-      if (!isUserTouching) return;
-      isUserTouching = false;
-      if (hasUserScrolled) settleUserScroll();
-    }, { passive: true });
-    popupContent.addEventListener('wheel', (event) => {
-      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
-      hasUserScrolled = true;
       settleUserScroll();
     }, { passive: true });
-
-    popup.on('open', () => {
-      const carousel = popupContent;
-      const centerActiveCard = () => {
-        const activeCard = carousel.querySelector(`[data-monk-index="${activeIndex}"]`);
-        if (!activeCard) return;
-        isCentering = true;
-        const currentScrollBehavior = carousel.style.scrollBehavior;
-        carousel.style.scrollBehavior = 'auto';
-        carousel.scrollLeft = activeCard.offsetLeft - (carousel.clientWidth - activeCard.offsetWidth) / 2;
-        carousel.style.scrollBehavior = currentScrollBehavior;
-        setTimeout(() => {
-          isCentering = false;
-        }, 100);
-      };
-      requestAnimationFrame(centerActiveCard);
-    });
+    popupContent.addEventListener('scrollend', () => {
+      if (!isMobileOverlayActive) return;
+      clearTimeout(scrollTimer);
+      if (isProgrammaticScroll) {
+        clearTimeout(programmaticScrollTimer);
+        isProgrammaticScroll = false;
+        return;
+      }
+      selectCenteredCard();
+    }, { passive: true });
+    const mobileOverlay = document.getElementById('mobile-card-overlay');
+    if (!mobileOverlay) throw new Error('Missing #mobile-card-overlay');
+    mobileOverlay.replaceChildren(popupContent);
+    mobileOverlay.hidden = false;
+    currentMobileCardOverlay = mobileOverlay;
+    currentMobileCardOnClose = onClose;
+    currentMobileCardCleanup = () => {
+      isMobileOverlayActive = false;
+      clearTimeout(scrollTimer);
+      clearTimeout(programmaticScrollTimer);
+    };
+    requestAnimationFrame(centerActiveCard);
   } else {
     popupContent.querySelector('.monk-popup-read')?.addEventListener('click', (event) => {
       event.stopPropagation();
@@ -335,20 +341,35 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     }, { passive: true });
   }
 
-  currentActivePopup = popup;
-  popup.on('close', () => {
-    if (currentActivePopup !== popup) return;
-    clearTimeout(scrollTimer);
-    currentActivePopup = null;
-    onClose?.();
-  });
-  popup.addTo(mapInstance);
+  if (popup) {
+    currentActivePopup = popup;
+    popup.on('close', () => {
+      if (currentActivePopup !== popup) return;
+      clearTimeout(scrollTimer);
+      currentActivePopup = null;
+      onClose?.();
+    });
+    popup.addTo(mapInstance);
+  }
 }
 
 export function closePopup() {
   const popup = currentActivePopup;
   currentActivePopup = null;
   popup?.remove();
+
+  const mobileOverlay = currentMobileCardOverlay;
+  const onClose = currentMobileCardOnClose;
+  const cleanup = currentMobileCardCleanup;
+  currentMobileCardOverlay = null;
+  currentMobileCardOnClose = null;
+  currentMobileCardCleanup = null;
+  cleanup?.();
+  if (mobileOverlay) {
+    mobileOverlay.replaceChildren();
+    mobileOverlay.hidden = true;
+    onClose?.();
+  }
 }
 
 // Сброс приближения карты к общему виду
