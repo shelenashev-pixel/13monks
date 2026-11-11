@@ -195,15 +195,13 @@
     }
     .modal-content { flex: 1; overflow-y: auto; padding: 30px 30px 18px; text-align: center; }
     @keyframes detail-slide-from-next {
-      from { opacity: .55; transform: translateX(24px); }
+      from { opacity: .82; transform: translateX(100vw); }
       to { opacity: 1; transform: translateX(0); }
     }
     @keyframes detail-slide-from-previous {
-      from { opacity: .55; transform: translateX(-24px); }
+      from { opacity: .82; transform: translateX(-100vw); }
       to { opacity: 1; transform: translateX(0); }
     }
-    .modal-content.slide-from-next { animation: detail-slide-from-next .2s ease-out; }
-    .modal-content.slide-from-previous { animation: detail-slide-from-previous .2s ease-out; }
     .modal-close {
       position: absolute; top: 13px; right: 14px; z-index: 2; display: grid;
       width: 34px; height: 34px; place-items: center; padding: 0; border: 0;
@@ -448,6 +446,12 @@
         z-index: 30; top: 14vh; top: 14dvh; right: 7vw; bottom: 0; left: 7vw;
         width: auto; max-height: none; transform: none; touch-action: pan-y;
         border: 0; border-radius: 24px 24px 0 0; background: white;
+      }
+      .monk-detail-modal.slide-from-next {
+        animation: detail-slide-from-next .38s cubic-bezier(.22,.8,.24,1) both;
+      }
+      .monk-detail-modal.slide-from-previous {
+        animation: detail-slide-from-previous .38s cubic-bezier(.22,.8,.24,1) both;
       }
       .modal-content { padding: 24px 22px 18px; text-align: center; touch-action: pan-y; }
       #modal-monk-index { margin-bottom: 15px; font-size: 23px; }

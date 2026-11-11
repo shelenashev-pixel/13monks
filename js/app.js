@@ -12,17 +12,15 @@ function openMonkModal(monk, index, direction = 0) {
 
   document.body.classList.add('monk-modal-open');
   const modalContent = modal.querySelector('.modal-content');
-  if (modalContent) {
-    modalContent.scrollTop = 0;
-    if (direction) {
-      const animationClass = direction > 0 ? 'slide-from-next' : 'slide-from-previous';
-      modalContent.classList.remove('slide-from-next', 'slide-from-previous');
-      void modalContent.offsetWidth;
-      modalContent.classList.add(animationClass);
-      modalContent.addEventListener('animationend', () => {
-        modalContent.classList.remove(animationClass);
-      }, { once: true });
-    }
+  if (modalContent) modalContent.scrollTop = 0;
+  if (direction) {
+    const animationClass = direction > 0 ? 'slide-from-next' : 'slide-from-previous';
+    modal.classList.remove('slide-from-next', 'slide-from-previous');
+    void modal.offsetWidth;
+    modal.classList.add(animationClass);
+    modal.addEventListener('animationend', () => {
+      modal.classList.remove(animationClass);
+    }, { once: true });
   }
   document.getElementById('modal-monk-index').innerText = index;
   document.getElementById('modal-monk-name').innerText = monk.name;
