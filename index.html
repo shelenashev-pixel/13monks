@@ -147,13 +147,13 @@
     #counter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
     .map-pin-wrap { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
     .map-pin {
-      display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; background: rgba(17,17,17,.9);
-      box-shadow: 0 4px 16px rgba(17,17,17,.18); color: #fff; font-size: 12px; line-height: 1; transform: scale(1); transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+      display: block; width: 22px; height: 22px; object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(17,17,17,.22));
+      transition: transform .18s ease, filter .18s ease;
     }
     .map-pin.is-active {
-      background: #a77a43; box-shadow: 0 7px 18px rgba(167,122,67,.38); transform: scale(1.14);
+      transform: scale(1.14); filter: drop-shadow(0 5px 10px rgba(167,122,67,.48));
     }
-    .map-pin-wrap.is-active .map-pin { background: #a77a43; }
 
     .monk-card {
       display: grid; flex: 0 0 70px; grid-template-columns: 32px 44px minmax(0,1fr);

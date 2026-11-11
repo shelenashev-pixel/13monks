@@ -4,6 +4,8 @@ let currentActivePopup = null;
 let currentMobileCardOverlay = null;
 let currentMobileCardOnClose = null;
 let currentMobileCardCleanup = null;
+const mapPinIcon = './images/ui-icons/cross-selected-off.svg';
+const activeMapPinIcon = './images/ui-icons/cross-selected-on.svg';
 
 export function initMap(monks, onMarkerClick) {
   mapInstance = new maplibregl.Map({
@@ -31,9 +33,11 @@ export function initMap(monks, onMarkerClick) {
     el.className = 'map-pin-wrap';
     el.setAttribute('role', 'button');
     el.setAttribute('tabindex', '0');
-    const markerIcon = document.createElement('span');
+    el.setAttribute('aria-pressed', 'false');
+    const markerIcon = document.createElement('img');
     markerIcon.className = 'map-pin';
-    markerIcon.textContent = '✝';
+    markerIcon.src = mapPinIcon;
+    markerIcon.alt = '';
     el.appendChild(markerIcon);
 
     const marker = new maplibregl.Marker({ element: el })
@@ -100,8 +104,9 @@ export function setActiveMarker(monk) {
     marker.getElement().classList.toggle('is-active', isActive);
     if (markerIcon) {
       markerIcon.classList.toggle('is-active', isActive);
-      markerIcon.setAttribute('aria-pressed', String(isActive));
+      markerIcon.src = isActive ? activeMapPinIcon : mapPinIcon;
     }
+    marker.getElement().setAttribute('aria-pressed', String(isActive));
   });
 }
 
