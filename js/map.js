@@ -3,7 +3,6 @@ let markersMap = {};
 let currentActivePopup = null;
 
 export function initMap(monks, onMarkerClick) {
-  // Координаты центра Грузии
   mapInstance = new maplibregl.Map({
     container: 'map',
     style: 'https://tiles.openfreemap.org/styles/liberty',
@@ -22,17 +21,15 @@ export function initMap(monks, onMarkerClick) {
     }
   });
 
-  // Расставляем маркеры монастырей
   monks.forEach((monk) => {
     if (!monk.coordinates) return;
 
-    // Кастомный маркер с крестом
     const el = document.createElement('div');
-    el.className = 'w-11 h-11 cursor-pointer flex items-center justify-center';
+    el.className = 'map-pin-wrap';
     el.setAttribute('role', 'button');
     el.setAttribute('tabindex', '0');
     const markerIcon = document.createElement('span');
-    markerIcon.className = 'w-7 h-7 bg-stone-900 border-2 border-white rounded-full flex items-center justify-center text-white text-xs shadow-lg hover:scale-110 transition-transform';
+    markerIcon.className = 'map-pin';
     markerIcon.textContent = '✝';
     el.appendChild(markerIcon);
 
@@ -58,7 +55,6 @@ export function initMap(monks, onMarkerClick) {
   return mapInstance;
 }
 
-// Плавный зум к выбранному монастырю
 export function flyToMonk(monk, { duration } = {}) {
   if (!mapInstance || !monk || !monk.coordinates) return;
 
@@ -77,11 +73,13 @@ export function flyToMonk(monk, { duration } = {}) {
 }
 
 export function setActiveMarker(monk) {
-  if (!monk) return;
   Object.values(markersMap).forEach(({ marker, monk: markerMonk }) => {
-    const markerIcon = marker.getElement().firstElementChild;
+    const markerIcon = marker.getElement().querySelector('.map-pin');
+    const isActive = markerMonk.id === monk?.id;
+    marker.getElement().classList.toggle('is-active', isActive);
     if (markerIcon) {
-      markerIcon.style.backgroundColor = markerMonk.id === monk.id ? '#a77a43' : '';
+      markerIcon.classList.toggle('is-active', isActive);
+      markerIcon.setAttribute('aria-pressed', String(isActive));
     }
   });
 }
@@ -96,6 +94,11 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   const popupContent = document.createElement('div');
   let activeIndex = -1;
   popupContent.className = isMobile ? 'mobile-monk-carousel' : 'w-[230px] bg-white rounded-2xl overflow-hidden font-sans text-stone-900 select-none';
+
+  const popupSummary = (item) => {
+    const sentence = (item.notable || item.martyrdom || '').split('.').filter(Boolean)[0];
+    return sentence ? `${sentence.trim()}.` : item.region || 'Featured monk';
+  };
 
   if (isMobile) {
     popupContent.setAttribute('role', 'group');
@@ -112,7 +115,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           <img class="mobile-card-icon" src="${item.iconUrl || `./images/icons/${item.id}.jpg`}" alt="" onerror="this.style.display='none'" />
           <h2 class="mobile-card-name">${item.name}</h2>
           <p class="mobile-card-monastery">${item.monastery}</p>
-          <p class="mobile-card-summary">${item.notable || item.martyrdom || ''}</p>
+          <p class="mobile-card-summary">${popupSummary(item)}</p>
           <div class="mobile-card-actions">
             ${item.gmapsUrl ? `<a class="mobile-card-maps" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps</a>` : ''}
             <button class="mobile-card-read" type="button" data-action="read">Read</button>
@@ -145,7 +148,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           ${monk.region || ''}
         </span>
         <p class="monk-popup-summary text-[11px] leading-relaxed text-stone-500 font-normal">
-          ${monk.martyrdom || monk.notable || ''}
+          ${popupSummary(monk)}
         </p>
         ${monk.gmapsUrl ? `
           <a

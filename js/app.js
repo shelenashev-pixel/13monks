@@ -3,7 +3,6 @@ import { initMap, flyToMonk, showPopup, closePopup, resetMapView } from './map.j
 
 let allMonksData = [];
 
-// Функция открытия детального модального окна святого
 function openMonkModal(monk, index) {
   const modal = document.getElementById('monk-detail-modal');
   if (!modal || !monk) return;
@@ -15,18 +14,19 @@ function openMonkModal(monk, index) {
   const gmapsLink = document.getElementById('modal-monk-gmaps');
   gmapsLink.href = monk.gmapsUrl || '#';
   gmapsLink.hidden = !monk.gmapsUrl;
-  
-  // Текст описания
-  const descContainer = document.getElementById('modal-monk-desc');
-  descContainer.innerHTML = `
-    <p>${monk.notable || ''}</p>
-    <p><strong class="text-stone-700">Repose:</strong> ${monk.martyrdom || ''}</p>
-  `;
 
+  const descContainer = document.getElementById('modal-monk-desc');
+  const notable = monk.notable ? monk.notable.trim() : '';
+  const martyrdom = monk.martyrdom ? monk.martyrdom.trim() : '';
+  const paragraphs = [
+    notable,
+    martyrdom ? `<strong class="text-stone-700">Repose:</strong> ${martyrdom}` : ''
+  ].filter(Boolean);
+
+  descContainer.innerHTML = paragraphs.join('');
   modal.classList.remove('hidden');
 }
 
-// Закрытие модального окна
 export function closeMonkModal() {
   closePopup();
   closeDetailModal();
@@ -44,17 +44,15 @@ function setMobileListOpen(isOpen) {
   document.getElementById('mobile-list-toggle')?.setAttribute('aria-expanded', String(isOpen));
 }
 
-// Единый обработчик выбора монаха (по клику на карточку или маркер)
 export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   const monk = allMonksData.find(m => m.id === monkId);
   if (!monk) return;
 
   const originalIndex = allMonksData.findIndex(m => m.id === monk.id) + 1;
-
-  // 1. Подсветка в левом списке
-  highlightActiveCard(monk.id, { scroll: !fromSwipe });
-
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
+
+  closeDetailModal();
+  highlightActiveCard(monk.id, { scroll: !fromSwipe });
   setMobileListOpen(false);
 
   if (fromSwipe && isMobile) {
@@ -62,14 +60,13 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
     return;
   }
 
-  // 2. Desktop opens details immediately; mobile shows the compact map card first.
-  if (!isMobile) openMonkModal(monk, originalIndex);
-
-  // 3. Полёт карты к монастырю и открытие карточки над маркером
   flyToMonk(monk, fromSwipe ? { duration: 450 } : undefined);
   showPopup(
     monk,
-    closeMonkModal,
+    () => {
+      closeDetailModal();
+      highlightActiveCard(null);
+    },
     () => openMonkModal(monk, originalIndex),
     originalIndex,
     (targetIndex) => {
@@ -100,6 +97,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       [monk.name, monk.monastery, monk.region]
         .some((value) => value?.toLocaleLowerCase().includes(query))
     );
+
+    if (!filteredMonks.length) {
+      renderCards(filteredMonks, allMonksData, handleSelectMonk, {
+        title: 'No monasteries found',
+        message: 'Try another monk, monastery, or region.',
+        actionLabel: 'Clear search',
+        onAction: () => {
+          if (searchInput) searchInput.value = '';
+          renderFilteredCards();
+        }
+      });
+      if (counter) counter.textContent = '0 monasteries';
+      return;
+    }
 
     renderCards(filteredMonks, allMonksData, handleSelectMonk);
     if (counter) counter.textContent = `${filteredMonks.length} Monasteries`;

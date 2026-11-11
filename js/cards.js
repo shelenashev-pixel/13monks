@@ -1,6 +1,6 @@
 let onCardClickCallback = null;
 
-export function renderCards(monks, allMonks, onSelect) {
+export function renderCards(monks, allMonks, onSelect, emptyState = null) {
   onCardClickCallback = onSelect;
 
   const container = document.getElementById('monks-list') || 
@@ -10,13 +10,29 @@ export function renderCards(monks, allMonks, onSelect) {
   if (!container) return;
   container.innerHTML = '';
 
+  if (!monks.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    const title = emptyState?.title || 'No monasteries found';
+    const message = emptyState?.message || 'Try another name or region.';
+    empty.innerHTML = `
+      <div class="empty-state-card">
+        <h3>${title}</h3>
+        <p>${message}</p>
+        ${emptyState?.onAction ? `<button type="button" class="empty-state-action">${emptyState.actionLabel || 'Clear search'}</button>` : ''}
+      </div>
+    `;
+    const actionButton = empty.querySelector('.empty-state-action');
+    actionButton?.addEventListener('click', () => emptyState.onAction?.());
+    container.appendChild(empty);
+    return;
+  }
+
   monks.forEach((monk) => {
     const originalIndex = allMonks.findIndex(m => m.id === monk.id) + 1;
 
     const card = document.createElement('div');
     card.id = `card-${monk.id}`;
-    
-    // Стили Default и Hover
     card.className = 'monk-card';
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
@@ -52,12 +68,10 @@ export function renderCards(monks, allMonks, onSelect) {
   });
 }
 
-/**
- * Подсветка активной карточки (пергаментный фон)
- */
 export function highlightActiveCard(id, { scroll = true } = {}) {
   document.querySelectorAll('.monk-card').forEach((card) => {
     card.removeAttribute('aria-current');
+    card.classList.remove('is-active');
   });
 
   if (!id) return;
@@ -65,6 +79,7 @@ export function highlightActiveCard(id, { scroll = true } = {}) {
   const activeCard = document.getElementById(`card-${id}`);
   if (activeCard) {
     activeCard.setAttribute('aria-current', 'true');
+    activeCard.classList.add('is-active');
     if (scroll) activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
