@@ -14,6 +14,22 @@ function openMonkModal(monk, index, direction = 0) {
   const modalContent = modal.querySelector('.modal-content');
   if (modalContent) modalContent.scrollTop = 0;
   if (direction) {
+    const outgoingCard = modal.cloneNode(true);
+    outgoingCard.removeAttribute('id');
+    outgoingCard.querySelectorAll('[id]').forEach((element) => element.removeAttribute('id'));
+    outgoingCard.classList.remove('hidden', 'slide-from-next', 'slide-from-previous');
+    outgoingCard.classList.add('modal-transition-outgoing');
+    outgoingCard.setAttribute('aria-hidden', 'true');
+    outgoingCard.inert = true;
+    outgoingCard.querySelector('.modal-content')?.classList.remove('slide-from-next', 'slide-from-previous');
+    outgoingCard.querySelectorAll('.modal-close, .modal-footer').forEach((element) => {
+      element.remove();
+    });
+    outgoingCard.classList.add(direction > 0 ? 'slide-to-previous' : 'slide-to-next');
+    outgoingCard.addEventListener('animationend', () => outgoingCard.remove(), { once: true });
+    document.body.appendChild(outgoingCard);
+    window.setTimeout(() => outgoingCard.remove(), 500);
+
     const animationClass = direction > 0 ? 'slide-from-next' : 'slide-from-previous';
     modal.classList.remove('slide-from-next', 'slide-from-previous');
     void modal.offsetWidth;

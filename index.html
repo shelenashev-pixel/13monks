@@ -194,13 +194,21 @@
       box-shadow: 0 12px 30px rgba(17,17,17,.08); transition: opacity .2s, transform .2s;
     }
     .modal-content { flex: 1; overflow-y: auto; padding: 30px 30px 18px; text-align: center; }
-    @keyframes detail-slide-from-next {
-      from { opacity: .82; transform: translateX(100vw); }
-      to { opacity: 1; transform: translateX(0); }
+    @keyframes detail-card-enter-next {
+      from { transform: translateX(100vw); }
+      to { transform: translateX(0); }
     }
-    @keyframes detail-slide-from-previous {
-      from { opacity: .82; transform: translateX(-100vw); }
-      to { opacity: 1; transform: translateX(0); }
+    @keyframes detail-card-enter-previous {
+      from { transform: translateX(-100vw); }
+      to { transform: translateX(0); }
+    }
+    @keyframes detail-card-exit-next {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100vw); }
+    }
+    @keyframes detail-card-exit-previous {
+      from { transform: translateX(0); }
+      to { transform: translateX(100vw); }
     }
     .modal-close {
       position: absolute; top: 13px; right: 14px; z-index: 2; display: grid;
@@ -448,10 +456,24 @@
         border: 0; border-radius: 24px 24px 0 0; background: white;
       }
       .monk-detail-modal.slide-from-next {
-        animation: detail-slide-from-next .38s cubic-bezier(.22,.8,.24,1) both;
+        z-index: 32;
+        animation: detail-card-enter-next .38s cubic-bezier(.22,.8,.24,1) both;
       }
       .monk-detail-modal.slide-from-previous {
-        animation: detail-slide-from-previous .38s cubic-bezier(.22,.8,.24,1) both;
+        z-index: 32;
+        animation: detail-card-enter-previous .38s cubic-bezier(.22,.8,.24,1) both;
+      }
+      .modal-transition-outgoing {
+        position: fixed; z-index: 31; top: 14dvh; right: 7vw; bottom: 0; left: 7vw;
+        display: flex; width: auto; flex-direction: column; overflow: hidden;
+        border: 0; border-radius: 24px 24px 0 0; background: white;
+        box-shadow: 0 12px 30px rgba(17,17,17,.08); pointer-events: none;
+      }
+      .modal-transition-outgoing.slide-to-previous {
+        animation: detail-card-exit-next .38s cubic-bezier(.22,.8,.24,1) both;
+      }
+      .modal-transition-outgoing.slide-to-next {
+        animation: detail-card-exit-previous .38s cubic-bezier(.22,.8,.24,1) both;
       }
       .modal-content { padding: 24px 22px 18px; text-align: center; touch-action: pan-y; }
       #modal-monk-index { margin-bottom: 15px; font-size: 23px; }
