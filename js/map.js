@@ -172,6 +172,9 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     const activeCard = popupContent.querySelector(`[data-monk-index="${activeIndex}"]`);
     let isCentering = false;
     let touchStart = null;
+    ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach((eventName) => {
+      popupContent.addEventListener(eventName, (event) => event.stopPropagation(), { passive: true });
+    });
     const selectCard = (targetIndex) => {
       if (targetIndex === activeIndex || targetIndex < 0 || targetIndex >= monks.length) return;
       onSwipe?.(targetIndex);
