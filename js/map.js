@@ -5,7 +5,7 @@ let currentActivePopup = null;
 export function initMap(monks, onMarkerClick) {
   mapInstance = new maplibregl.Map({
     container: 'map',
-    style: './assets/flyd8nvq0.json',
+    style: './assets/i7nro2p20.json',
     center: [44.8, 41.9],
     zoom: 7.5,
     attributionControl: false
