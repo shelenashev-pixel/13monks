@@ -114,7 +114,7 @@ export function setActiveMarker(monk) {
 export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk]) {
   if (!mapInstance || !monk || !monk.coordinates) return;
 
-  closePopup();
+  closePopup({ notify: false });
 
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
   const popupContent = document.createElement('div');
@@ -352,7 +352,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   }
 }
 
-export function closePopup() {
+export function closePopup({ notify = true } = {}) {
   const popup = currentActivePopup;
   currentActivePopup = null;
   popup?.remove();
@@ -367,7 +367,7 @@ export function closePopup() {
   if (mobileOverlay) {
     mobileOverlay.replaceChildren();
     mobileOverlay.hidden = true;
-    onClose?.();
+    if (notify) onClose?.();
   }
 }
 
