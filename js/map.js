@@ -58,6 +58,8 @@ export function initMap(monks, onMarkerClick) {
 export function flyToMonk(monk, { duration } = {}) {
   if (!mapInstance || !monk || !monk.coordinates) return;
 
+  mapInstance.resize();
+  mapInstance.stop();
   setActiveMarker(monk);
 
   const cameraOptions = {
