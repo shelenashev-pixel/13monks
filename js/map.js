@@ -221,7 +221,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       button.addEventListener('click', () => popup.remove());
     });
     popupContent.addEventListener('scroll', () => {
-      if (isCentering || (!isUserTouching && !hasUserScrolled)) return;
+      if (isCentering) return;
       hasUserScrolled = true;
       settleUserScroll();
     }, { passive: true });
