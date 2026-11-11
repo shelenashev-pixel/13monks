@@ -23,7 +23,7 @@ function openMonkModal(monk, index) {
     martyrdom ? `<strong class="text-stone-700">Repose:</strong> ${martyrdom}` : ''
   ].filter(Boolean);
 
-  descContainer.innerHTML = paragraphs.join('');
+  descContainer.innerHTML = paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('');
   modal.classList.remove('hidden');
 }
 
@@ -51,6 +51,7 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
   const originalIndex = allMonksData.findIndex(m => m.id === monk.id) + 1;
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
 
+  if (!fromSwipe || !isMobile) closePopup();
   closeDetailModal();
   highlightActiveCard(monk.id, { scroll: !fromSwipe });
   setMobileListOpen(false);
@@ -59,6 +60,8 @@ export function handleSelectMonk(monkId, { fromSwipe = false } = {}) {
     flyToMonk(monk, { duration: 450 });
     return;
   }
+
+  if (!isMobile) openMonkModal(monk, originalIndex);
 
   flyToMonk(monk, fromSwipe ? { duration: 450 } : undefined);
   showPopup(
@@ -140,6 +143,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeBtn.addEventListener('click', closeDetailModal);
   }
   document.getElementById('modal-close-action')?.addEventListener('click', closeDetailModal);
+  const selectAdjacentMonk = (offset) => {
+    const currentName = document.getElementById('modal-monk-name')?.textContent;
+    const currentIndex = allMonksData.findIndex((monk) => monk.name === currentName);
+    if (currentIndex < 0 || !allMonksData.length) return;
+    const nextIndex = (currentIndex + offset + allMonksData.length) % allMonksData.length;
+    handleSelectMonk(allMonksData[nextIndex].id);
+  };
+  document.getElementById('detail-prev')?.addEventListener('click', () => selectAdjacentMonk(-1));
+  document.getElementById('detail-next')?.addEventListener('click', () => selectAdjacentMonk(1));
   document.addEventListener('keydown', (event) => {
     const modal = document.getElementById('monk-detail-modal');
     if (event.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
