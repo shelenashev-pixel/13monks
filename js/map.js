@@ -129,17 +129,14 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       <article class="mobile-monk-card" data-monk-index="${itemIndex}" aria-current="${item.id === monk.id}">
         <div class="mobile-card-image">
           <img src="${item.imageUrl || `./images/monasteries/${item.id}.jpg`}" alt="${item.monastery}" onerror="this.style.display='none'" />
-          <span class="mobile-card-number">${itemIndex + 1}</span>
-          <button class="mobile-card-close" type="button" aria-label="Close monastery card">×</button>
         </div>
+        <img class="mobile-card-icon" src="${item.iconUrl || `./images/icons/${item.id}.jpg`}" alt="" onerror="this.style.display='none'" />
         <div class="mobile-card-content">
-          <img class="mobile-card-icon" src="${item.iconUrl || `./images/icons/${item.id}.jpg`}" alt="" onerror="this.style.display='none'" />
-          <h2 class="mobile-card-name">${item.name}</h2>
+          <h2 class="mobile-card-name">${itemIndex + 1} | ${item.name}</h2>
           <p class="mobile-card-monastery">${item.monastery}</p>
-          <p class="mobile-card-summary">${popupSummary(item)}</p>
           <div class="mobile-card-actions">
-            ${item.gmapsUrl ? `<a class="mobile-card-maps" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer">Google Maps</a>` : ''}
-            <button class="mobile-card-read" type="button" data-action="read">Read</button>
+            ${item.gmapsUrl ? `<a class="mobile-card-maps" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>` : ''}
+            <button class="mobile-card-read" type="button" data-action="read">Read more</button>
           </div>
         </div>
       </article>
@@ -269,9 +266,6 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
         event.stopPropagation();
         onRead?.();
       });
-    });
-    popupContent.querySelectorAll('.mobile-card-close').forEach((button) => {
-      button.addEventListener('click', closePopup);
     });
     popupContent.addEventListener('scroll', () => {
       if (!isMobileOverlayActive) return;
