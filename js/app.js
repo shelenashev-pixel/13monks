@@ -1,5 +1,7 @@
 import { renderCards, highlightActiveCard } from './cards.js';
-import { initMap, flyToMonk, showPopup, closePopup, resetMapView } from './map.js';
+import {
+  initMap, flyToMonk, showPopup, closePopup, resetMapView, setActiveMarker, selectMobileCard
+} from './map.js';
 
 let allMonksData = [];
 let selectionRevision = 0;
@@ -87,6 +89,13 @@ export function handleSelectMonk(monkId, {
     void flyToMonk(monk, { duration: 450 }).catch((error) => {
       console.error(`Failed to navigate to ${monk.name}`, error);
     });
+    return;
+  }
+
+  if (keepModalOpen && isMobile) {
+    setActiveMarker(monk);
+    selectMobileCard(originalIndex - 1);
+    openMonkModal(monk, originalIndex, modalDirection);
     return;
   }
 
@@ -209,15 +218,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('detail-prev')?.addEventListener('click', () => selectAdjacentMonk(-1));
   document.getElementById('detail-next')?.addEventListener('click', () => selectAdjacentMonk(1));
   const modal = document.getElementById('monk-detail-modal');
+  const modalContent = modal?.querySelector('.modal-content');
   let modalSwipeStart = null;
-  modal?.addEventListener('pointerdown', (event) => {
+  modalContent?.addEventListener('pointerdown', (event) => {
     if (!window.matchMedia('(max-width: 760px)').matches
       || event.pointerType !== 'touch'
       || event.button !== 0
       || event.target.closest('button, a')) return;
     modalSwipeStart = { x: event.clientX, y: event.clientY };
   }, { passive: true });
-  modal?.addEventListener('pointerup', (event) => {
+  modalContent?.addEventListener('pointerup', (event) => {
     if (!modalSwipeStart || event.pointerType !== 'touch') return;
     const deltaX = event.clientX - modalSwipeStart.x;
     const deltaY = event.clientY - modalSwipeStart.y;
@@ -225,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (Math.abs(deltaX) < 55 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
     selectAdjacentMonk(deltaX < 0 ? 1 : -1);
   }, { passive: true });
-  modal?.addEventListener('pointercancel', () => {
+  modalContent?.addEventListener('pointercancel', () => {
     modalSwipeStart = null;
   }, { passive: true });
   document.addEventListener('keydown', (event) => {

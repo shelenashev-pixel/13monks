@@ -307,6 +307,7 @@
 
     @media (max-width: 760px) {
       body.monk-modal-open .maplibregl-popup { display: none; }
+      body.monk-modal-open #map { visibility: hidden; }
       body.monk-modal-open .modal-side-preview {
         position: fixed; z-index: 31; top: 14dvh; bottom: 0; display: block;
         width: 86vw; border-radius: 24px 24px 0 0; background: #fff;
@@ -448,7 +449,7 @@
         width: auto; max-height: none; transform: none; touch-action: pan-y;
         border: 0; border-radius: 24px 24px 0 0; background: white;
       }
-      .modal-content { padding: 24px 22px 18px; text-align: center; }
+      .modal-content { padding: 24px 22px 18px; text-align: center; touch-action: pan-y; }
       #modal-monk-index { margin-bottom: 15px; font-size: 23px; }
       #modal-monk-name { margin-bottom: 22px; font-size: 27px; }
       .modal-icon { width: 132px; height: 132px; margin-bottom: 22px; }

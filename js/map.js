@@ -4,6 +4,7 @@ let currentActivePopup = null;
 let currentMobileCardOverlay = null;
 let currentMobileCardOnClose = null;
 let currentMobileCardCleanup = null;
+let currentMobileCardSelect = null;
 const mapPinIcon = './images/ui-icons/cross-selected-off.svg';
 const activeMapPinIcon = './images/ui-icons/cross-selected-on.svg';
 
@@ -258,6 +259,17 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     const centerActiveCard = () => {
       centerCard(activeIndex);
     };
+    const selectMobileCard = (targetIndex) => {
+      if (targetIndex < 0 || targetIndex >= monks.length) return;
+      if (targetIndex !== activeIndex) {
+        activeIndex = targetIndex;
+        popupContent.dataset.activeIndex = String(targetIndex);
+        popupContent.querySelectorAll('.mobile-monk-card').forEach((card, cardIndex) => {
+          card.setAttribute('aria-current', String(cardIndex === targetIndex));
+        });
+      }
+      centerCard(targetIndex);
+    };
     const settleUserScroll = () => {
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
@@ -307,10 +319,12 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     mobileOverlay.hidden = false;
     currentMobileCardOverlay = mobileOverlay;
     currentMobileCardOnClose = onClose;
+    currentMobileCardSelect = selectMobileCard;
     currentMobileCardCleanup = () => {
       isMobileOverlayActive = false;
       clearTimeout(scrollTimer);
       clearTimeout(programmaticScrollTimer);
+      if (currentMobileCardSelect === selectMobileCard) currentMobileCardSelect = null;
     };
     requestAnimationFrame(centerActiveCard);
   } else {
@@ -350,6 +364,10 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     });
     popup.addTo(mapInstance);
   }
+}
+
+export function selectMobileCard(index) {
+  currentMobileCardSelect?.(index);
 }
 
 export function closePopup({ notify = true } = {}) {
