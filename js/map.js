@@ -147,7 +147,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
         </div>
         <img class="mobile-card-icon" src="${item.iconUrl || `./images/icons/${item.id}.jpg`}" alt="" onerror="this.style.display='none'" />
         <div class="mobile-card-content">
-          <h2 class="mobile-card-name">${itemIndex + 1} | ${item.name}</h2>
+          <h2 class="mobile-card-name">${item.name}</h2>
           <p class="mobile-card-monastery">${item.monastery}</p>
           <div class="mobile-card-actions">
             <button class="mobile-card-read" type="button" data-action="read" data-monk-id="${item.id}">Read more</button>

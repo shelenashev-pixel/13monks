@@ -93,10 +93,16 @@ function setMobileListOpen(isOpen) {
 
 function updateMapViewButton() {
   const button = document.getElementById('reset-btn');
-  if (!button) return;
   const isMapOnlyView = document.body.classList.contains('map-only-view');
-  button.textContent = isMapOnlyView ? 'View list' : 'View map';
-  button.setAttribute('aria-pressed', String(isMapOnlyView));
+  if (button) {
+    button.textContent = isMapOnlyView ? 'View list' : 'View map';
+    button.setAttribute('aria-pressed', String(isMapOnlyView));
+  }
+  const mobileOverlay = document.getElementById('mobile-card-overlay');
+  if (mobileOverlay) {
+    mobileOverlay.inert = isMapOnlyView;
+    mobileOverlay.setAttribute('aria-hidden', String(isMapOnlyView));
+  }
 }
 
 export function handleSelectMonk(monkId, {
