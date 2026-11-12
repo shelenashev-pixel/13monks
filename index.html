@@ -92,7 +92,7 @@
     .header-actions { display: flex; align-items: center; gap: 14px; pointer-events: auto; }
     .reset-btn {
       min-width: 86px; padding: 11px 22px; border: 0; border-radius: 999px;
-      background: #111; color: white; font: 500 13px Inter, sans-serif; cursor: pointer;
+      background: #1a1a1a; color: white; font: 500 13px Inter, sans-serif; cursor: pointer;
       transition: background .18s, transform .18s;
     }
     .reset-btn:hover { background: #333; transform: translateY(-1px); }
@@ -317,6 +317,22 @@
         display: flex; width: min(185px, 100%); margin: 14px auto 0;
         padding: 12px 14px; background: #f0ede6; color: #111;
       }
+      .monks-panel, .detail-overlay {
+        transition: opacity .24s ease, transform .24s ease, visibility 0s;
+      }
+      .maplibregl-popup {
+        transition: opacity .24s ease, visibility 0s;
+      }
+      body.map-only-view .monks-panel {
+        opacity: 0; transform: translateX(-18px); visibility: hidden; pointer-events: none;
+      }
+      body.map-only-view .detail-overlay {
+        opacity: 0; transform: translateX(18px); visibility: hidden; pointer-events: none;
+      }
+      body.map-only-view .maplibregl-popup {
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transition-delay: 0s, .24s;
+      }
     }
 
     @media (max-width: 760px) {
@@ -345,11 +361,12 @@
       }
       .header-actions { position: static; }
       .header-actions .reset-btn {
-        position: absolute; top: calc(80px + env(safe-area-inset-top)); left: 50%; display: block; min-width: 0;
+        position: fixed; top: auto; bottom: calc(10px + env(safe-area-inset-bottom)); left: 50%;
+        z-index: 27; display: block; min-width: 0;
         padding: 9px 22px; transform: translateX(-50%);
-        background: #fff; color: #171717; font-size: 13px;
+        background: #1a1a1a; color: #fff; font-size: 13px;
       }
-      .header-actions .reset-btn:hover { background: #f0ede6; transform: translateX(-50%); }
+      .header-actions .reset-btn:hover { background: #333; transform: translateX(-50%); }
       .language-switch {
         position: absolute; top: calc(15px + env(safe-area-inset-top)); right: 12px; display: flex;
         width: 42px; height: 42px; align-items: center; justify-content: center;
@@ -409,7 +426,7 @@
       .card-copy p { margin-top: 4px; font-size: 11px; }
       body.mobile-list-open .mobile-list-toggle { visibility: hidden; }
       #mobile-card-overlay {
-        position: fixed; z-index: 25; right: 0; bottom: calc(8px + env(safe-area-inset-bottom)); left: 0;
+        position: fixed; z-index: 25; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); left: 0;
         overflow: hidden; pointer-events: none; contain: layout paint;
       }
       #mobile-card-overlay[hidden] { display: none; }
@@ -431,6 +448,18 @@
       }
       .mobile-card-image { position: relative; flex: 0 0 46%; min-height: 120px; background: #e8e6e0; }
       .mobile-card-image > img { width: 100%; height: 100%; object-fit: cover; }
+      .mobile-card-number {
+        position: absolute; top: 12px; left: 14px; z-index: 1;
+        color: #fff; font: 400 24px/1 'Prata', Georgia, serif;
+        text-shadow: 0 1px 5px rgba(0,0,0,.7);
+      }
+      .mobile-card-location {
+        position: absolute; top: 10px; right: 12px; z-index: 1;
+        display: grid; width: 40px; height: 40px; place-items: center;
+        border-radius: 50%; background: rgba(255,255,255,.94); color: #171717;
+        box-shadow: 0 2px 8px rgba(0,0,0,.16);
+      }
+      .mobile-card-location svg { width: 21px; height: 21px; }
       .mobile-card-icon {
         position: absolute; z-index: 1; top: calc(46% - clamp(40px, 9.7vw, 70px)); left: 50%;
         width: clamp(80px, 19.4vw, 140px); height: clamp(80px, 19.4vw, 140px);

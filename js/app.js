@@ -72,6 +72,10 @@ function closeDetailModal() {
 }
 
 function setMobileListOpen(isOpen) {
+  if (isOpen) {
+    document.body.classList.remove('map-only-view');
+    updateMapViewButton();
+  }
   document.body.classList.toggle('mobile-list-open', isOpen);
   document.getElementById('mobile-list-toggle')?.setAttribute('aria-expanded', String(isOpen));
 }
@@ -96,6 +100,8 @@ export function handleSelectMonk(monkId, {
   const originalIndex = allMonksData.findIndex(m => m.id === monk.id) + 1;
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
 
+  document.body.classList.remove('map-only-view');
+  updateMapViewButton();
   if (!fromSwipe || !isMobile) closePopup({ notify: !keepModalOpen });
   if (!keepModalOpen) closeDetailModal();
   highlightActiveCard(monk.id, { scroll: !fromSwipe && !keepModalOpen });
@@ -127,7 +133,10 @@ export function handleSelectMonk(monkId, {
           closeDetailModal();
           highlightActiveCard(null);
         },
-        () => openMonkModal(monk, originalIndex),
+        (_targetIndex, selectedMonk = monk) => {
+          const selectedIndex = allMonksData.findIndex((item) => item.id === selectedMonk.id);
+          if (selectedIndex >= 0) openMonkModal(selectedMonk, selectedIndex + 1);
+        },
         originalIndex,
         (targetIndex) => {
           if (popupSelectionRevision !== selectionRevision) return;
@@ -198,18 +207,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateMapViewButton();
   };
   document.getElementById('reset-btn')?.addEventListener('click', () => {
-    if (window.matchMedia('(max-width: 760px)').matches) {
-      document.body.classList.toggle('map-only-view');
-      updateMapViewButton();
-      return;
-    }
-    resetMap();
+    document.body.classList.toggle('map-only-view');
+    updateMapViewButton();
   });
   document.getElementById('mobile-reset-btn')?.addEventListener('click', resetMap);
   document.getElementById('mobile-list-toggle')?.addEventListener('click', () => setMobileListOpen(true));
   document.getElementById('mobile-list-close')?.addEventListener('click', () => setMobileListOpen(false));
 
   renderFilteredCards();
+  if (window.matchMedia('(max-width: 760px)').matches && allMonksData[0]?.coordinates) {
+    showPopup(
+      allMonksData[0],
+      () => {
+        closeDetailModal();
+        highlightActiveCard(null);
+      },
+      (_targetIndex, selectedMonk) => {
+        if (!selectedMonk) return;
+        const selectedIndex = allMonksData.findIndex((item) => item.id === selectedMonk.id);
+        if (selectedIndex >= 0) openMonkModal(selectedMonk, selectedIndex + 1);
+      },
+      1,
+      (targetIndex) => {
+        const selectedMonk = allMonksData[targetIndex];
+        if (selectedMonk) handleSelectMonk(selectedMonk.id, { fromSwipe: true });
+      },
+      allMonksData
+    );
+  }
 
   // Кнопка закрытия модального окна
   const closeBtn = document.getElementById('close-modal-btn');

@@ -135,13 +135,21 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       <article class="mobile-monk-card" data-monk-index="${itemIndex}" aria-current="${item.id === monk.id}">
         <div class="mobile-card-image">
           <img src="${item.imageUrl || `./images/monasteries/${item.id}.jpg`}" alt="${item.monastery}" onerror="this.style.display='none'" />
+          <span class="mobile-card-number">${itemIndex + 1}</span>
+          ${item.gmapsUrl ? `
+            <a class="mobile-card-location" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer" aria-label="Open ${item.monastery} in Google Maps">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                <circle cx="12" cy="10" r="2.5"></circle>
+              </svg>
+            </a>
+          ` : ''}
         </div>
         <img class="mobile-card-icon" src="${item.iconUrl || `./images/icons/${item.id}.jpg`}" alt="" onerror="this.style.display='none'" />
         <div class="mobile-card-content">
           <h2 class="mobile-card-name">${itemIndex + 1} | ${item.name}</h2>
           <p class="mobile-card-monastery">${item.monastery}</p>
           <div class="mobile-card-actions">
-            ${item.gmapsUrl ? `<a class="mobile-card-maps" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer"><span>Open in Google Maps</span></a>` : ''}
             <button class="mobile-card-read" type="button" data-action="read">Read more</button>
           </div>
         </div>
@@ -281,7 +289,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     popupContent.querySelectorAll('.mobile-card-read').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.stopPropagation();
-        onRead?.();
+        onRead?.(activeIndex, monks[activeIndex]);
       });
     });
     popupContent.addEventListener('scroll', () => {
@@ -330,7 +338,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   } else {
     popupContent.querySelector('.monk-popup-read')?.addEventListener('click', (event) => {
       event.stopPropagation();
-      onRead?.();
+      onRead?.(index - 1, monk);
     });
 
     let swipeStart = null;
