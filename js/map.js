@@ -150,7 +150,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           <h2 class="mobile-card-name">${itemIndex + 1} | ${item.name}</h2>
           <p class="mobile-card-monastery">${item.monastery}</p>
           <div class="mobile-card-actions">
-            <button class="mobile-card-read" type="button" data-action="read">Read more</button>
+            <button class="mobile-card-read" type="button" data-action="read" data-monk-id="${item.id}">Read more</button>
           </div>
         </div>
       </article>
@@ -289,7 +289,11 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     popupContent.querySelectorAll('.mobile-card-read').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.stopPropagation();
-        onRead?.(activeIndex, monks[activeIndex]);
+        const monkId = event.currentTarget.dataset.monkId;
+        const targetIndex = monks.findIndex((item) => item.id === monkId);
+        const targetMonk = monks[targetIndex];
+        if (!targetMonk) throw new Error(`Unknown monk on mobile card: ${monkId}`);
+        onRead?.(monkId, targetIndex, targetMonk);
       });
     });
     popupContent.addEventListener('scroll', () => {
@@ -338,7 +342,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   } else {
     popupContent.querySelector('.monk-popup-read')?.addEventListener('click', (event) => {
       event.stopPropagation();
-      onRead?.(index - 1, monk);
+      onRead?.(monk.id, index - 1, monk);
     });
 
     let swipeStart = null;

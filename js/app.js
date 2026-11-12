@@ -58,6 +58,17 @@ function openMonkModal(monk, index, direction = 0) {
   modal.classList.remove('hidden');
 }
 
+function openMonkDetails(monkId) {
+  const index = allMonksData.findIndex((monk) => monk.id === monkId);
+  if (index < 0) throw new Error(`Unknown monk requested for details: ${monkId}`);
+
+  const monk = allMonksData[index];
+  setActiveMarker(monk);
+  selectMobileCard(index);
+  highlightActiveCard(monk.id, { scroll: false });
+  openMonkModal(monk, index + 1);
+}
+
 export function closeMonkModal() {
   closePopup();
   closeDetailModal();
@@ -133,10 +144,7 @@ export function handleSelectMonk(monkId, {
           closeDetailModal();
           highlightActiveCard(null);
         },
-        (_targetIndex, selectedMonk = monk) => {
-          const selectedIndex = allMonksData.findIndex((item) => item.id === selectedMonk.id);
-          if (selectedIndex >= 0) openMonkModal(selectedMonk, selectedIndex + 1);
-        },
+        (selectedMonkId) => openMonkDetails(selectedMonkId || monk.id),
         originalIndex,
         (targetIndex) => {
           if (popupSelectionRevision !== selectionRevision) return;
@@ -222,11 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         closeDetailModal();
         highlightActiveCard(null);
       },
-      (_targetIndex, selectedMonk) => {
-        if (!selectedMonk) return;
-        const selectedIndex = allMonksData.findIndex((item) => item.id === selectedMonk.id);
-        if (selectedIndex >= 0) openMonkModal(selectedMonk, selectedIndex + 1);
-      },
+      (selectedMonkId) => openMonkDetails(selectedMonkId),
       1,
       (targetIndex) => {
         const selectedMonk = allMonksData[targetIndex];
