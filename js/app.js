@@ -10,6 +10,7 @@ function openMonkModal(monk, index, direction = 0) {
   const modal = document.getElementById('monk-detail-modal');
   if (!modal || !monk) return;
 
+  document.getElementById('detail-overlay')?.classList.remove('hidden');
   document.body.classList.add('monk-modal-open');
   const modalContent = modal.querySelector('.modal-content');
   if (modalContent) modalContent.scrollTop = 0;
@@ -66,6 +67,7 @@ export function closeMonkModal() {
 function closeDetailModal() {
   const modal = document.getElementById('monk-detail-modal');
   if (modal) modal.classList.add('hidden');
+  document.getElementById('detail-overlay')?.classList.add('hidden');
   document.body.classList.remove('monk-modal-open');
 }
 
