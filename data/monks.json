@@ -42,8 +42,23 @@
     ],
     "imageUrl": "./assets/monasteries/abibos-nekresi.jpg",
     "gmapsUrl": "https://www.google.com/maps/search/?api=1&query=Nekresi&query_place_id=ChIJBSsMNG_aRUARuqwXOPSZqas",
-    "notable": "Bishop of Nekresi. Preached among mountain tribes and extinguished a Zoroastrian sacred fire altar with water.",
-    "martyrdom": "Martyred: Captured by the Persian Marzban, scourged, and stoned to death near Rekhi."
+    "detailSections": [
+      {
+        "heading": "The Saint",
+        "paragraphs": [
+          "While most of his fellow Syrian monks looked for quiet caves or remote forest ridges to pray in solitude, Abibos took on a much more public, high-stakes role. Becoming the Bishop of Nekresi in Kakheti, he stepped directly into a cultural battleground where Sasanian Persian influence was strong and Zoroastrian fire temples stood right alongside Christian communities. Instead of retreating from the world, he actively traveled across the eastern mountains, converting locals and openly challenging Persian religious authority.",
+          "The story everyone remembers about Abibos—and the reason Nekresi still has a quirky culinary rule today—comes down to a single bucket of water. Exhausted by watching local Georgians bow to a sacred Zoroastrian flame, Abibos walked straight into the fire temple and poured water over the brazier, extinguishing the \"eternal\" fire on the spot. Legend also connects Nekresi with a clever survival trick during a later Muslim raid: locals reportedly slaughtered pigs and poured pork blood around the monastery gates, causing the attackers to turn back in disgust. To this day, Nekresi is the only church complex in Georgia where pork is traditionally allowed at the festive table.",
+          "Extinguishing the royal Persian fire was treated as treason. Persian soldiers arrested Abibos, beat him, and marched him toward the governor of Marzpan in Mtskheta. Near the village of Rekha, he was stoned to death and his body dragged outside the walls to be eaten by wild beasts—though local chronicles note the animals refused to touch him. Monks initially buried him at Samtavro before his relics were eventually brought back beneath the episcopal church in Mtskheta (Samtavro Monastery). Today, he is venerated by the Georgian Orthodox Church as a Hieromartyr (Saint and Martyr) and the spiritual protector of Kakheti."
+        ]
+      },
+      {
+        "heading": "The Monastery",
+        "paragraphs": [
+          "Architecturally, Nekresi isn't a single building, but a compact medieval town perched high on a steep wooded ridge overlooking the Alazani Valley. Its oldest surviving gem—the tiny fourth-century basilica built even before Abibos arrived—is one of the earliest Christian stone churches in Georgia, so small you almost have to duck inside. Around it, the complex expanded across centuries: you'll see a 6th–7th century three-church basilica (a uniquely Georgian layout where three naves are separated by solid walls), a 9th-century domed church, the ruins of a two-story bishop's palace, a defensive tower, and an ancient marani (wine cellar) with massive clay qvevri buried in the stone floor.",
+          "Today, Nekresi operates as an active men's monastery and one of Kakheti's most atmospheric historic sites. Because the road up the mountain is dangerously steep, visitors leave their cars at the bottom and take a shuttle bus up through the dense forest—emerging onto breezy stone terraces where monks still live and the entire Alazani plain stretches out below like a map."
+        ]
+      }
+    ]
   },
   {
     "id": "tate-dzveli-shuamta",

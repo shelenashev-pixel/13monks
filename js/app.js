@@ -53,14 +53,29 @@ function openMonkModal(monk, index, direction = 0) {
   gmapsLink.hidden = !monk.gmapsUrl;
 
   const descContainer = document.getElementById('modal-monk-desc');
-  const notable = monk.notable ? monk.notable.trim() : '';
-  const martyrdom = monk.martyrdom ? monk.martyrdom.trim() : '';
-  const paragraphs = [
-    notable,
-    martyrdom ? `<strong class="text-stone-700">Repose:</strong> ${martyrdom}` : ''
-  ].filter(Boolean);
+  if (Array.isArray(monk.detailSections)) {
+    descContainer.replaceChildren(...monk.detailSections.map(({ heading, paragraphs }) => {
+      const section = document.createElement('section');
+      const title = document.createElement('h3');
+      title.textContent = heading;
+      section.appendChild(title);
+      paragraphs.forEach((text) => {
+        const paragraph = document.createElement('p');
+        paragraph.textContent = text;
+        section.appendChild(paragraph);
+      });
+      return section;
+    }));
+  } else {
+    const notable = monk.notable ? monk.notable.trim() : '';
+    const martyrdom = monk.martyrdom ? monk.martyrdom.trim() : '';
+    const paragraphs = [
+      notable,
+      martyrdom ? `<strong class="text-stone-700">Repose:</strong> ${martyrdom}` : ''
+    ].filter(Boolean);
 
-  descContainer.innerHTML = paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('');
+    descContainer.innerHTML = paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('');
+  }
   modal.classList.remove('hidden');
 }
 
