@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#e0d5c1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -28,6 +28,7 @@
             serif: ['Prata', 'Georgia', 'serif'],
             sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
           }
+          .monk-skeleton { flex-basis: 62px; }
         }
       }
     }
@@ -36,21 +37,48 @@
   <style>
     :root {
       color-scheme: light;
-      --paper: #f5f2eb;
-      --ink: #111111;
-      --muted: #777777;
+      --surface-canvas: #e0d5c1;
+      --surface-panel: #ffffff;
+      --surface-soft: #f5f2eb;
+      --surface-input: #e9e7e2;
+      --text-primary: #111111;
+      --text-secondary: #777777;
+      --paper: var(--surface-soft);
+      --ink: var(--text-primary);
+      --muted: var(--text-secondary);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --radius-card: 16px;
+      --radius-pill: 999px;
+      --control-height-s: 32px;
+      --control-height-m: 40px;
+      --control-height-l: 48px;
+      --motion-standard: cubic-bezier(.22, 1, .36, 1);
     }
 
     * { box-sizing: border-box; }
     html {
       margin: 0; padding: 0; width: 100%; height: 100%;
-      background-color: #e0d5c1;
+      background-color: var(--surface-canvas);
     }
     body {
       margin: 0; padding: 0; width: 100%; height: 100lvh;
-      position: relative; background-color: #e0d5c1; overscroll-behavior: none;
+      position: relative; background-color: var(--surface-canvas); overscroll-behavior: none;
     }
-    .hidden { display: none !important; }
+    .hidden, [hidden] { display: none !important; }
+    button {
+      box-sizing: border-box; display: inline-flex; align-items: center;
+      justify-content: center; white-space: nowrap; line-height: 1;
+    }
+    button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
+      outline: 2px solid #6f5636; outline-offset: 3px;
+    }
+    svg {
+      flex-shrink: 0; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #c9c6bd; border-radius: 9999px; }
@@ -63,7 +91,7 @@
       right: 0 !important;
       width: 100vw !important;
       height: 100lvh !important;
-      background-color: #e0d5c1;
+      background-color: var(--surface-canvas);
     }
     body::after {
       content: "";
@@ -89,28 +117,30 @@
       letter-spacing: -1.2px; text-shadow: 0 1px 8px rgba(255,255,255,.38);
       max-width: 620px;
     }
-    .header-actions { display: flex; align-items: center; gap: 14px; pointer-events: auto; }
+    .header-actions { display: flex; align-items: center; gap: var(--space-3); pointer-events: auto; }
     .reset-btn {
-      min-width: 86px; padding: 11px 22px; border: 0; border-radius: 999px;
+      display: inline-flex; height: var(--control-height-s); min-width: 86px;
+      padding: 0 22px; border: 0; border-radius: var(--radius-pill);
       background: #1a1a1a; color: white; font: 500 13px Inter, sans-serif; cursor: pointer;
-      transition: background .18s, transform .18s;
+      transition: opacity .18s var(--motion-standard);
     }
-    .reset-btn:hover { background: #333; transform: translateY(-1px); }
+    .reset-btn:hover { background: #333; }
     .language-switch {
-      display: flex; align-items: center; gap: 4px; padding: 5px;
+      display: flex; width: var(--control-height-m); height: var(--control-height-m);
+      align-items: center; justify-content: center; gap: 4px; padding: 4px;
       border: 1px solid rgba(0,0,0,.06); border-radius: 999px; background: rgba(255,255,255,.88);
       box-shadow: 0 2px 10px rgba(0,0,0,.08);
     }
     .language-switch span {
-      display: grid; width: 31px; height: 31px; place-items: center;
+      display: grid; width: 30px; height: 30px; place-items: center;
       border-radius: 50%; font-size: 16px;
     }
     .mobile-list-toggle, .mobile-list-close, .mobile-reset-btn { display: none; }
 
     .monks-panel {
       position: fixed; z-index: 10; top: 82px; bottom: 16px; left: 16px;
-      display: flex; flex-direction: column; gap: 15px;
-      width: min(434px, calc(100vw - 32px)); padding: 16px;
+      display: flex; flex-direction: column; gap: var(--space-4);
+      width: min(434px, calc(100vw - 32px)); padding: var(--space-4);
       border: 1px solid rgba(255,255,255,.8); border-radius: 16px;
       background: #f7f5ef; box-shadow: 0 10px 28px rgba(36,31,24,.08);
     }
@@ -120,17 +150,21 @@
       background: transparent; font: 400 clamp(28px, 2.8vw, 39px)/1.08 'Prata', Georgia, serif;
       letter-spacing: -.8px;
     }
-    .search-wrap { position: relative; flex: 0 0 41px; }
+    .search-wrap {
+      position: relative; flex: 0 0 var(--control-height-m);
+      height: var(--control-height-m);
+    }
     .search-icon {
       position: absolute; top: 10px; left: 16px; width: 20px; height: 20px;
       color: #111; pointer-events: none;
     }
     #search-input {
       width: 100%; height: 100%; padding: 0 16px 0 46px; outline: none;
-      border: 1px solid transparent; border-radius: 999px; background: #e9e7e2;
+      border: 1px solid transparent; border-radius: var(--radius-pill); background: var(--surface-input);
       color: var(--ink); font: 14px Inter, sans-serif;
     }
     #search-input:focus { border-color: #a4a09a; background: #f1efeb; }
+    #search-input:focus-visible { outline: 2px solid #6f5636; outline-offset: 2px; }
     #search-input::placeholder { color: #777; }
     #monks-list { display: flex; flex: 1; flex-direction: column; gap: 8px; min-height: 0; overflow-y: auto; padding: 0 0 2px; }
     .empty-state {
@@ -142,17 +176,63 @@
     .empty-state-card h3 { margin: 0 0 8px; color: #171717; font: 400 24px/1.2 'Prata', Georgia, serif; }
     .empty-state-card p { margin: 0 0 14px; color: #666; font: 13px/1.5 Inter, sans-serif; }
     .empty-state-action {
-      border: 0; border-radius: 999px; background: #171717; color: white; padding: 9px 16px; font: 600 12px Inter, sans-serif; cursor: pointer;
+      display: inline-flex; height: var(--control-height-m); padding: 0 16px;
+      border: 0; border-radius: var(--radius-pill); background: #171717;
+      color: white; font: 600 12px Inter, sans-serif; cursor: pointer;
+    }
+    .monk-skeleton {
+      position: relative; flex: 0 0 70px; overflow: hidden; border-radius: 12px;
+      background: #f1efeb;
+    }
+    .monk-skeleton::after {
+      position: absolute; inset: 0; content: "";
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+      transform: translateX(-100%); animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+    .app-status {
+      position: fixed; z-index: 40; bottom: 24px; left: 50%;
+      display: flex; align-items: center; gap: var(--space-3); max-width: calc(100vw - 32px);
+      padding: var(--space-3) var(--space-4); transform: translateX(-50%);
+      border: 1px solid rgba(17,17,17,.08); border-radius: 12px;
+      background: var(--surface-panel); color: var(--text-primary);
+      box-shadow: 0 8px 24px rgba(17,17,17,.12);
+      font: 13px/1.4 Inter, sans-serif;
+    }
+    .app-status::before {
+      width: 18px; height: 18px; flex: 0 0 18px; content: "";
+      border: 2px solid #ded9cf; border-top-color: #6f5636; border-radius: 50%;
+      animation: status-spin .8s linear infinite;
+    }
+    @keyframes status-spin { to { transform: rotate(360deg); } }
+    .app-status.is-error {
+      top: 50%; bottom: auto; flex-wrap: wrap; width: min(380px, calc(100vw - 32px));
+      padding: var(--space-6); transform: translate(-50%, -50%);
+    }
+    .app-status.is-error::before { display: none; }
+    .app-status-retry {
+      display: inline-flex; height: var(--control-height-m); margin-left: auto;
+      padding: 0 16px; border: 0; border-radius: var(--radius-pill);
+      background: #171717; color: #fff; font: 500 12px Inter, sans-serif; cursor: pointer;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important; animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important; transition-duration: .01ms !important;
+      }
     }
     #counter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
     .map-pin-wrap { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
     .map-pin {
       display: block; width: 22px; height: 22px; object-fit: contain;
       filter: drop-shadow(0 4px 8px rgba(17,17,17,.22));
-      transition: width .18s ease, height .18s ease, transform .18s ease, filter .18s ease;
+      transition: transform .18s var(--motion-standard), opacity .18s var(--motion-standard);
     }
     .map-pin.is-active {
       transform: scale(1.14); filter: drop-shadow(0 5px 10px rgba(167,122,67,.48));
+    }
+    .map-pin-wrap:focus-visible {
+      border-radius: 50%; outline: 2px solid #6f5636; outline-offset: 3px;
     }
 
     .monk-card {
@@ -160,7 +240,7 @@
       align-items: center; gap: 10px; width: 100%; padding: 6px 8px;
       border: 1px solid rgba(17,17,17,.08); border-radius: 12px;
       background: rgba(255,255,255,.28); color: var(--ink); cursor: pointer;
-      transition: background .18s, border-color .18s, box-shadow .18s, transform .18s;
+      transition: opacity .18s var(--motion-standard), transform .18s var(--motion-standard);
     }
     .monk-card:hover {
       background: rgba(255,255,255,.72);
@@ -169,7 +249,7 @@
     .monk-card.is-active,
     .monk-card.border-stone-800,
     .monk-card[aria-current="true"] {
-      border-color: rgba(23,23,23,.46) !important; background: #fff !important; box-shadow: 0 6px 18px rgba(17,17,17,.08) !important; transform: translateX(2px);
+      border-color: rgba(23,23,23,.46) !important; background: #fff !important; box-shadow: 0 6px 18px rgba(17,17,17,.08) !important;
     }
     .card-number { color: #080808; font: 400 30px/1 'Prata', Georgia, serif; text-align: center; }
     .card-icon-frame {
@@ -216,23 +296,28 @@
       to { transform: translateX(100vw); }
     }
     .modal-close {
-      position: absolute; top: 13px; right: 14px; z-index: 2; display: grid;
+      position: absolute; top: 13px; right: 14px; z-index: 2; display: inline-flex;
       width: 34px; height: 34px; place-items: center; padding: 0; border: 0;
       background: transparent; color: #111; cursor: pointer; pointer-events: auto;
     }
     .modal-close:hover { color: #777; }
     #modal-monk-index { display: block; margin-bottom: 14px; color: #111; font: 400 25px/1 'Prata', Georgia, serif; }
     #modal-monk-name { margin: 0 0 30px; color: #080808; font: 400 clamp(28px, 3vw, 42px)/1.18 'Prata', Georgia, serif; }
-    .modal-icon {
-      display: block; width: 162px; height: 162px; margin: 0 auto 30px;
-      border-radius: 50%; background: #eeece8; object-fit: cover; border: 5px solid rgba(255,255,255,.8); box-shadow: 0 10px 18px rgba(16,16,16,.08);
+    .modal-icon-frame {
+      position: relative; display: grid; width: 162px; height: 162px; margin: 0 auto 30px;
+      overflow: hidden; place-items: center; border: 5px solid rgba(255,255,255,.8);
+      border-radius: 50%; background: #eeece8; box-shadow: 0 10px 18px rgba(16,16,16,.08);
     }
+    .modal-icon { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .modal-icon-fallback { display: none; color: #777; font: 400 42px/1 'Prata', Georgia, serif; }
+    .modal-icon-frame.is-missing .modal-icon { display: none; }
+    .modal-icon-frame.is-missing .modal-icon-fallback { display: grid; }
     #modal-monk-desc { margin: 0; color: #777; font: 13px/1.5 Inter, sans-serif; text-align: left; }
     #modal-monk-desc p + p { margin-top: 8px; }
     #modal-monk-desc strong { color: #555; }
     .monk-popup-gmaps {
-      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
-      margin-top: 12px; padding: 9px 14px; border-radius: 999px;
+      display: inline-flex; height: var(--control-height-l); align-items: center; justify-content: center; gap: 9px;
+      margin-top: 12px; padding: 0 14px; border-radius: var(--radius-pill);
       background: #111; color: white; font: 500 11px Inter, sans-serif;
       text-decoration: none; transition: background .18s;
     }
@@ -264,7 +349,7 @@
       .header-actions { align-items: center; }
       .header-actions .reset-btn { order: 1; }
       .header-actions .language-switch {
-        order: 2; display: grid; width: 42px; height: 42px;
+        order: 2; display: grid; width: var(--control-height-m); height: var(--control-height-m);
         padding: 0; place-items: center; border-radius: 50%;
       }
       .header-actions .language-switch span:not(:first-child) { display: none; }
@@ -301,14 +386,14 @@
         display: flex; justify-content: center; gap: 12px; pointer-events: none;
       }
       .desktop-detail-nav button {
-        display: grid; width: 44px; height: 44px; place-items: center;
+        display: inline-flex; width: var(--control-height-m); height: var(--control-height-m);
         border: 0; border-radius: 50%; background: #f5f2eb; color: #171717;
         font: 400 24px/1 Inter, sans-serif; cursor: pointer; pointer-events: auto;
       }
       .desktop-detail-nav button:hover { background: #e9e2d6; }
       #modal-monk-index { margin-bottom: 16px; }
       #modal-monk-name { margin-bottom: 24px; font-size: 30px; }
-      .modal-icon { width: 140px; height: 140px; margin-bottom: 24px; }
+      .modal-icon-frame { width: 140px; height: 140px; margin-bottom: 24px; }
       #modal-monk-desc { text-align: center; }
       .custom-monk-popup .monk-popup-image { height: 150px; }
       .custom-monk-popup .monk-popup-details { padding: 18px 14px 14px; }
@@ -318,7 +403,7 @@
       .custom-monk-popup .monk-popup-region { margin: 0 0 12px; font-size: 12px; }
       .custom-monk-popup .monk-popup-gmaps {
         display: flex; width: min(185px, 100%); margin: 14px auto 0;
-        padding: 12px 14px; background: #f0ede6; color: #111;
+        padding: 0 14px; background: #f0ede6; color: #111;
       }
       .monks-panel, .detail-overlay {
         transition: opacity .24s ease, transform .24s ease, visibility 0s;
@@ -353,10 +438,10 @@
       .modal-side-preview-next { right: -82vw; }
       .map-pin-wrap { width: 40px; height: 40px; }
       .map-pin { width: 32px; height: 32px; }
-      .map-pin.is-active { width: 40px; height: 40px; transform: none; }
+      .map-pin.is-active { transform: scale(1.25); }
       .app-header {
         min-height: 112px; justify-content: center;
-        padding: calc(13px + env(safe-area-inset-top)) 56px 10px;
+        padding: calc(16px + env(safe-area-inset-top)) 56px 10px;
       }
       .app-title {
         max-width: 260px; font-size: 21px; line-height: 1.15;
@@ -365,26 +450,26 @@
       .header-actions { position: static; }
       .header-actions .reset-btn {
         position: fixed; top: calc(70px + env(safe-area-inset-top)); bottom: auto; left: 50%;
-        z-index: 27; display: block; min-width: 0;
-        padding: 9px 22px; transform: translateX(-50%);
+        z-index: 27; display: inline-flex; min-width: 0;
+        padding: 0 22px; transform: translateX(-50%);
         background: #1a1a1a; color: #fff; font-size: 13px;
       }
       .header-actions .reset-btn:hover { background: #333; transform: translateX(-50%); }
       .language-switch {
-        position: absolute; top: calc(15px + env(safe-area-inset-top)); right: 12px; display: flex;
-        width: 42px; height: 42px; align-items: center; justify-content: center;
+        position: absolute; top: calc(16px + env(safe-area-inset-top)); right: 20px; display: flex;
+        width: var(--control-height-m); height: var(--control-height-m); align-items: center; justify-content: center;
         padding: 0; border: 0; border-radius: 50%; background: white;
         box-shadow: 0 2px 10px rgba(0,0,0,.12);
       }
       .language-switch span { display: none; }
       .language-switch span:first-child { display: grid; width: 100%; height: 100%; font-size: 18px; }
       .mobile-list-toggle {
-        position: absolute; top: calc(15px + env(safe-area-inset-top)); left: 12px;
-        display: grid; width: 42px; height: 42px; place-items: center;
+        position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 20px;
+        display: inline-flex; width: var(--control-height-m); height: var(--control-height-m);
         padding: 0; border: 0; border-radius: 50%; background: white;
         color: #111; box-shadow: 0 2px 10px rgba(0,0,0,.12); cursor: pointer;
       }
-      .mobile-list-toggle svg { width: 23px; height: 23px; }
+      .mobile-list-toggle svg { width: 24px; height: 24px; }
       .monks-panel {
         z-index: 35; top: 0; right: 0; bottom: 0; left: 0; display: none;
         width: 100%; height: auto; gap: 12px;
@@ -395,12 +480,13 @@
       body.mobile-list-open .monks-panel { display: flex; }
       body.mobile-list-open .app-header { display: none; }
       .mobile-list-close {
-        position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 18px;
-        display: grid; flex: 0 0 42px; width: 42px; height: 42px;
+        position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 20px;
+        display: inline-flex; flex: 0 0 var(--control-height-m);
+        width: var(--control-height-m); height: var(--control-height-m);
         place-items: center; padding: 0; border: 0; border-radius: 50%;
         background: white; color: #171717; box-shadow: 0 2px 10px rgba(0,0,0,.08); cursor: pointer;
       }
-      .mobile-list-close svg { width: 17px; height: 17px; }
+      .mobile-list-close svg { width: 24px; height: 24px; }
       .panel-intro {
         flex: 0 0 auto; align-self: center; justify-content: center;
         width: min(300px, 100%); min-height: 56px; margin: 14px 0 8px; padding: 0 28px;
@@ -411,7 +497,7 @@
         align-self: flex-start; padding: 0; border: 0; background: transparent;
         color: #777; font: 12px Inter, sans-serif; text-decoration: underline; cursor: pointer;
       }
-      .search-wrap { flex-basis: 38px; }
+      .search-wrap { flex-basis: var(--control-height-m); }
       .search-icon { top: 9px; left: 13px; width: 19px; height: 19px; }
       #search-input { padding-left: 40px; font-size: 13px; }
       #monks-list { gap: 3px; padding-bottom: env(safe-area-inset-bottom); }
@@ -434,6 +520,7 @@
         opacity: 1; transform: translateY(0);
         transition: opacity .24s ease, transform .24s ease;
       }
+      .app-status { bottom: calc(16px + env(safe-area-inset-bottom)); }
       #mobile-card-overlay[hidden] { display: none; }
       body.monk-modal-open #mobile-card-overlay { visibility: hidden; }
       body.map-only-view #mobile-card-overlay { opacity: 0; pointer-events: none; transform: translateY(16px); }
@@ -461,7 +548,7 @@
       }
       .mobile-card-location {
         position: absolute; top: 10px; right: 12px; z-index: 1;
-        display: grid; width: 40px; height: 40px; place-items: center;
+        display: grid; width: var(--control-height-m); height: var(--control-height-m); place-items: center;
         border-radius: 50%; background: rgba(255,255,255,.94); color: #171717;
         box-shadow: 0 2px 8px rgba(0,0,0,.16);
       }
@@ -482,9 +569,12 @@
         text-overflow: ellipsis; white-space: nowrap;
       }
       .mobile-card-monastery { margin: 6px 0 0; color: #777; font: clamp(16px, 3.7vw, 26px)/1.3 Inter, sans-serif; }
-      .mobile-card-actions { display: flex; width: 100%; gap: 12px; justify-content: center; margin-top: 14px; }
+      .mobile-card-actions {
+        display: flex; width: 100%; gap: var(--space-3); justify-content: center;
+        margin-top: auto; padding-top: var(--space-3);
+      }
       .mobile-card-read, .mobile-card-maps {
-        display: flex; flex: 1; min-width: 0; min-height: 44px;
+        display: flex; flex: 1; min-width: 0; height: var(--control-height-l);
         align-items: center; justify-content: center; padding: 0 12px;
         border: 0; border-radius: 999px; font: 500 clamp(15px, 3.6vw, 22px) Inter, sans-serif;
         text-decoration: none; white-space: nowrap;
@@ -503,11 +593,11 @@
       }
       .monk-detail-modal.slide-from-next {
         z-index: 32;
-        animation: detail-card-enter-next .38s cubic-bezier(.22,.8,.24,1) both;
+        animation: detail-card-enter-next .38s var(--motion-standard) both;
       }
       .monk-detail-modal.slide-from-previous {
         z-index: 32;
-        animation: detail-card-enter-previous .38s cubic-bezier(.22,.8,.24,1) both;
+        animation: detail-card-enter-previous .38s var(--motion-standard) both;
       }
       .modal-transition-outgoing {
         position: fixed; z-index: 31; top: 14dvh; right: 7vw; bottom: 0; left: 7vw;
@@ -516,15 +606,15 @@
         box-shadow: 0 12px 30px rgba(17,17,17,.08); pointer-events: none;
       }
       .modal-transition-outgoing.slide-to-previous {
-        animation: detail-card-exit-next .38s cubic-bezier(.22,.8,.24,1) both;
+        animation: detail-card-exit-next .38s var(--motion-standard) both;
       }
       .modal-transition-outgoing.slide-to-next {
-        animation: detail-card-exit-previous .38s cubic-bezier(.22,.8,.24,1) both;
+        animation: detail-card-exit-previous .38s var(--motion-standard) both;
       }
       .modal-content { padding: 24px 22px 18px; text-align: center; touch-action: pan-y; }
       #modal-monk-index { margin-bottom: 15px; font-size: 23px; }
       #modal-monk-name { margin-bottom: 22px; font-size: 27px; }
-      .modal-icon { width: 132px; height: 132px; margin-bottom: 22px; }
+      .modal-icon-frame { width: 132px; height: 132px; margin-bottom: 22px; }
       #modal-monk-desc { font-size: 12px; line-height: 1.5; text-align: center; }
       .modal-close {
         position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); left: 20px;
@@ -541,11 +631,11 @@
       }
       .modal-gmaps {
         display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: 9px;
-        min-height: 42px; padding: 10px 12px; border: 0; border-radius: 999px;
+        height: var(--control-height-l); padding: 0 12px; border: 0; border-radius: var(--radius-pill);
         font: 500 12px Inter, sans-serif; text-decoration: none;
       }
       .modal-gmaps { background: #f0ede6; color: #171717; }
-      .monk-detail-modal .modal-close { display: grid; }
+      .monk-detail-modal .modal-close { display: inline-flex; }
     }
     @media (max-width: 430px) {
       .app-title { max-width: 240px; font-size: 20px; }
@@ -554,6 +644,10 @@
 </head>
 <body>
   <div id="map" aria-label="Map showing monastery locations"></div>
+  <div id="app-status" class="app-status" role="status" aria-live="polite">
+    <span id="app-status-message">Loading monastery locations…</span>
+    <button id="app-status-retry" class="app-status-retry" type="button" hidden>Retry</button>
+  </div>
   <div id="mobile-card-overlay" hidden></div>
 
   <header class="app-header">
@@ -587,7 +681,12 @@
         <input id="search-input" type="search" placeholder="Search" aria-label="Search by monk, monastery, or region">
       </label>
       <span id="counter" aria-live="polite">0 monasteries</span>
-      <div id="monks-list"></div>
+      <div id="monks-list" aria-busy="true">
+        <div class="monk-skeleton" aria-hidden="true"></div>
+        <div class="monk-skeleton" aria-hidden="true"></div>
+        <div class="monk-skeleton" aria-hidden="true"></div>
+        <div class="monk-skeleton" aria-hidden="true"></div>
+      </div>
     </aside>
   </main>
 
@@ -605,7 +704,10 @@
       <div class="modal-content">
         <span id="modal-monk-index">2</span>
         <h2 id="modal-monk-name">Anton of Martqopi</h2>
-        <img id="modal-monk-icon" class="modal-icon" src="" alt="">
+        <div id="modal-icon-frame" class="modal-icon-frame">
+          <img id="modal-monk-icon" class="modal-icon" src="" alt="">
+          <span class="modal-icon-fallback" aria-hidden="true">✝</span>
+        </div>
         <div id="modal-monk-desc"></div>
       </div>
       <div class="desktop-detail-nav" aria-label="Browse monks">

@@ -70,12 +70,13 @@ export function flyToMonk(monk, { duration } = {}) {
   mapInstance.resize();
   setActiveMarker(monk);
 
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cameraOptions = {
     center: monk.coordinates,
     offset: window.innerWidth > 760 ? [Math.min(window.innerWidth * 0.33, 450), 165] : [0, 0],
     zoom: 11,
-    essential: true,
-    duration: duration ?? 850
+    essential: !prefersReducedMotion,
+    duration: prefersReducedMotion ? 0 : duration ?? 850
   };
 
   return new Promise((resolve) => {

@@ -42,7 +42,12 @@ function openMonkModal(monk, index, direction = 0) {
   }
   document.getElementById('modal-monk-index').innerText = index;
   document.getElementById('modal-monk-name').innerText = monk.name;
-  document.getElementById('modal-monk-icon').src = monk.iconUrl || `./images/icons/${monk.id}.jpg`;
+  const icon = document.getElementById('modal-monk-icon');
+  const iconFrame = document.getElementById('modal-icon-frame');
+  iconFrame?.classList.remove('is-missing');
+  icon.onload = () => iconFrame?.classList.remove('is-missing');
+  icon.onerror = () => iconFrame?.classList.add('is-missing');
+  icon.src = monk.iconUrl || `./images/icons/${monk.id}.jpg`;
   const gmapsLink = document.getElementById('modal-monk-gmaps');
   gmapsLink.href = monk.gmapsUrl || '#';
   gmapsLink.hidden = !monk.gmapsUrl;
@@ -201,12 +206,39 @@ export function handleSelectMonk(monkId, {
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
-  const response = await fetch('./data/monks.json');
-  if (!response.ok) {
-    throw new Error(`Failed to load monastery data: ${response.status} ${response.statusText}`);
+  const status = document.getElementById('app-status');
+  const statusMessage = document.getElementById('app-status-message');
+  const retryButton = document.getElementById('app-status-retry');
+  const monkList = document.getElementById('monks-list');
+  retryButton?.addEventListener('click', () => window.location.reload());
+
+  try {
+    const response = await fetch('./data/monks.json');
+    if (!response.ok) {
+      throw new Error(`Failed to load monastery data: ${response.status} ${response.statusText}`);
+    }
+
+    allMonksData = await response.json();
+    if (!Array.isArray(allMonksData)) {
+      throw new Error('Monastery data must be an array');
+    }
+  } catch (error) {
+    console.error('Unable to load monastery data', error);
+    if (monkList) {
+      monkList.replaceChildren();
+      monkList.setAttribute('aria-busy', 'false');
+    }
+    if (status && statusMessage) {
+      status.classList.add('is-error');
+      status.setAttribute('role', 'alert');
+      status.setAttribute('aria-live', 'assertive');
+      statusMessage.textContent = 'Monastery locations could not be loaded. Check your connection and retry.';
+      retryButton?.removeAttribute('hidden');
+    }
+    return;
   }
 
-  allMonksData = await response.json();
+  status?.classList.add('hidden');
 
   initMap(allMonksData, handleSelectMonk);
   renderCards(allMonksData, allMonksData, handleSelectMonk);
@@ -261,6 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('mobile-list-close')?.addEventListener('click', () => setMobileListOpen(false));
 
   renderFilteredCards();
+  monkList?.setAttribute('aria-busy', 'false');
   if (window.matchMedia('(max-width: 760px)').matches && allMonksData[0]?.coordinates) {
     showPopup(
       allMonksData[0],
