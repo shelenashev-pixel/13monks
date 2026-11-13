@@ -237,10 +237,6 @@
       text-decoration: none; transition: background .18s;
     }
     .monk-popup-gmaps:hover { background: #333; }
-    .monk-popup-read {
-      display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 7px 14px; border: 0; border-radius: 999px;
-      background: #171717; color: white; font: 600 11px Inter, sans-serif; cursor: pointer;
-    }
     .modal-footer { display: none; }
     .modal-side-preview { display: none; }
     .desktop-detail-nav { display: none; }
@@ -297,6 +293,7 @@
         width: 100%;
         border-radius: 16px; background: #fff;
       }
+      .modal-transition-outgoing { display: none !important; }
       .modal-content { padding: 28px 26px 72px; }
       .desktop-detail-nav {
         position: absolute; right: 0; bottom: 14px; left: 0; z-index: 2;
@@ -318,7 +315,6 @@
         margin: 0 0 6px; font-size: 22px; line-height: 1.2;
       }
       .custom-monk-popup .monk-popup-region { margin: 0 0 12px; font-size: 12px; }
-      .custom-monk-popup .monk-popup-summary { font-size: 12px; line-height: 1.45; }
       .custom-monk-popup .monk-popup-gmaps {
         display: flex; width: min(185px, 100%); margin: 14px auto 0;
         padding: 12px 14px; background: #f0ede6; color: #111;

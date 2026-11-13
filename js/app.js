@@ -5,6 +5,7 @@ import {
 
 let allMonksData = [];
 let selectionRevision = 0;
+let activeMonkId = null;
 
 function openMonkModal(monk, index, direction = 0) {
   const modal = document.getElementById('monk-detail-modal');
@@ -14,7 +15,7 @@ function openMonkModal(monk, index, direction = 0) {
   document.body.classList.add('monk-modal-open');
   const modalContent = modal.querySelector('.modal-content');
   if (modalContent) modalContent.scrollTop = 0;
-  if (direction) {
+  if (direction && window.matchMedia('(max-width: 760px)').matches) {
     const outgoingCard = modal.cloneNode(true);
     outgoingCard.removeAttribute('id');
     outgoingCard.querySelectorAll('[id]').forEach((element) => element.removeAttribute('id'));
@@ -63,9 +64,7 @@ function openMonkDetails(monkId) {
   if (index < 0) throw new Error(`Unknown monk requested for details: ${monkId}`);
 
   const monk = allMonksData[index];
-  setActiveMarker(monk);
-  selectMobileCard(index);
-  highlightActiveCard(monk.id, { scroll: false });
+  syncActiveMonkOnMobile(monkId, { syncMiniCarousel: true });
   openMonkModal(monk, index + 1);
 }
 
@@ -75,11 +74,15 @@ export function closeMonkModal() {
   highlightActiveCard(null);
 }
 
-function closeDetailModal() {
+function closeDetailModal({ syncMap = true } = {}) {
   const modal = document.getElementById('monk-detail-modal');
+  const wasOpen = modal && !modal.classList.contains('hidden');
   if (modal) modal.classList.add('hidden');
   document.getElementById('detail-overlay')?.classList.add('hidden');
   document.body.classList.remove('monk-modal-open');
+  if (syncMap && wasOpen && window.matchMedia('(max-width: 760px)').matches && activeMonkId) {
+    syncActiveMonkOnMobile(activeMonkId, { syncMiniCarousel: true, flyMap: true });
+  }
 }
 
 function setMobileListOpen(isOpen) {
@@ -105,6 +108,30 @@ function updateMapViewButton() {
   }
 }
 
+function syncActiveMonkOnMobile(monkId, {
+  syncMiniCarousel = true,
+  syncDetailCarousel = false,
+  flyMap = false,
+  modalDirection = 0
+} = {}) {
+  const index = allMonksData.findIndex((monk) => monk.id === monkId);
+  if (index < 0) throw new Error(`Unknown monk requested for mobile sync: ${monkId}`);
+
+  const monk = allMonksData[index];
+  activeMonkId = monkId;
+  document.body.classList.remove('map-only-view');
+  updateMapViewButton();
+  setActiveMarker(monk);
+  highlightActiveCard(monkId, { scroll: false });
+  if (syncMiniCarousel) selectMobileCard(index);
+  if (syncDetailCarousel) openMonkModal(monk, index + 1, modalDirection);
+  if (flyMap) {
+    void flyToMonk(monk, { duration: 450 }).catch((error) => {
+      console.error(`Failed to navigate to ${monk.name}`, error);
+    });
+  }
+}
+
 export function handleSelectMonk(monkId, {
   fromSwipe = false,
   keepModalOpen = false,
@@ -116,25 +143,26 @@ export function handleSelectMonk(monkId, {
   const revision = ++selectionRevision;
   const originalIndex = allMonksData.findIndex(m => m.id === monk.id) + 1;
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
+  activeMonkId = monk.id;
 
   document.body.classList.remove('map-only-view');
   updateMapViewButton();
   if (!fromSwipe || !isMobile) closePopup({ notify: !keepModalOpen });
-  if (!keepModalOpen) closeDetailModal();
+  if (!keepModalOpen) closeDetailModal({ syncMap: false });
   highlightActiveCard(monk.id, { scroll: !fromSwipe && !keepModalOpen });
   setMobileListOpen(false);
 
   if (fromSwipe && isMobile && !keepModalOpen) {
-    void flyToMonk(monk, { duration: 450 }).catch((error) => {
-      console.error(`Failed to navigate to ${monk.name}`, error);
-    });
+    syncActiveMonkOnMobile(monk.id, { syncMiniCarousel: false, flyMap: true });
     return;
   }
 
   if (keepModalOpen && isMobile) {
-    setActiveMarker(monk);
-    selectMobileCard(originalIndex - 1);
-    openMonkModal(monk, originalIndex, modalDirection);
+    syncActiveMonkOnMobile(monk.id, {
+      syncMiniCarousel: true,
+      syncDetailCarousel: true,
+      modalDirection
+    });
     return;
   }
 
@@ -153,11 +181,15 @@ export function handleSelectMonk(monkId, {
         (selectedMonkId) => openMonkDetails(selectedMonkId || monk.id),
         originalIndex,
         (targetIndex) => {
-          if (popupSelectionRevision !== selectionRevision) return;
+          if (!isMobile && popupSelectionRevision !== selectionRevision) return;
           const nextMonk = allMonksData[targetIndex];
           if (!nextMonk) return;
-          handleSelectMonk(nextMonk.id, { fromSwipe: true });
-          popupSelectionRevision = selectionRevision;
+          if (isMobile) {
+            syncActiveMonkOnMobile(nextMonk.id, { syncMiniCarousel: false, flyMap: true });
+          } else {
+            handleSelectMonk(nextMonk.id, { fromSwipe: true });
+            popupSelectionRevision = selectionRevision;
+          }
         },
         allMonksData
       );
@@ -260,11 +292,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const keepModalOpen = window.matchMedia('(max-width: 760px)').matches
       && modal
       && !modal.classList.contains('hidden');
-    handleSelectMonk(allMonksData[nextIndex].id, {
-      fromSwipe: keepModalOpen,
-      keepModalOpen,
-      modalDirection: offset
-    });
+    if (keepModalOpen) {
+      syncActiveMonkOnMobile(allMonksData[nextIndex].id, {
+        syncMiniCarousel: true,
+        syncDetailCarousel: true,
+        modalDirection: offset
+      });
+    } else {
+      handleSelectMonk(allMonksData[nextIndex].id);
+    }
   };
   document.getElementById('detail-prev')?.addEventListener('click', () => selectAdjacentMonk(-1));
   document.getElementById('detail-next')?.addEventListener('click', () => selectAdjacentMonk(1));

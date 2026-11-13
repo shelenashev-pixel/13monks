@@ -122,11 +122,6 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   let activeIndex = -1;
   popupContent.className = isMobile ? 'mobile-monk-carousel' : 'w-[230px] bg-white rounded-2xl overflow-hidden font-sans text-stone-900 select-none';
 
-  const popupSummary = (item) => {
-    const sentence = (item.notable || item.martyrdom || '').split('.').filter(Boolean)[0];
-    return sentence ? `${sentence.trim()}.` : item.region || 'Featured monk';
-  };
-
   if (isMobile) {
     popupContent.setAttribute('role', 'group');
     popupContent.setAttribute('aria-label', 'Swipe to browse monasteries');
@@ -174,14 +169,10 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           <h4 class="monk-popup-title font-serif text-xl text-stone-900 leading-snug mt-1 mb-2 font-normal">
             ${monk.monastery}
           </h4>
-          <button class="monk-popup-read" type="button">Read</button>
         </div>
         <span class="monk-popup-region text-[11px] font-sans text-stone-400 block tracking-wide">
           ${monk.region || ''}
         </span>
-        <p class="monk-popup-summary text-[11px] leading-relaxed text-stone-500 font-normal">
-          ${popupSummary(monk)}
-        </p>
         ${monk.gmapsUrl ? `
           <a
             class="monk-popup-gmaps"
@@ -215,6 +206,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     let isMobileOverlayActive = true;
     let isProgrammaticScroll = true;
     let programmaticScrollTimer;
+    let programmaticScrollRevision = 0;
     const selectCard = (targetIndex) => {
       if (targetIndex === activeIndex || targetIndex < 0 || targetIndex >= monks.length) return;
       activeIndex = targetIndex;
@@ -235,14 +227,15 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
       isProgrammaticScroll = true;
       clearTimeout(programmaticScrollTimer);
       popupContent.scrollLeft = targetScrollLeft;
+      const currentScroll = ++programmaticScrollRevision;
       const carouselCenter = popupContent.getBoundingClientRect().left + popupContent.clientWidth / 2;
       const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
       if (Math.abs(cardCenter - carouselCenter) < 1) {
         isProgrammaticScroll = false;
       } else {
         programmaticScrollTimer = setTimeout(() => {
-          isProgrammaticScroll = false;
-        }, 400);
+          if (currentScroll === programmaticScrollRevision) isProgrammaticScroll = false;
+        }, 150);
       }
     };
     const selectCenteredCard = () => {
@@ -340,11 +333,6 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     };
     requestAnimationFrame(centerActiveCard);
   } else {
-    popupContent.querySelector('.monk-popup-read')?.addEventListener('click', (event) => {
-      event.stopPropagation();
-      onRead?.(monk.id, index - 1, monk);
-    });
-
     let swipeStart = null;
     popupContent.addEventListener('touchstart', (event) => {
       if (event.touches.length !== 1 || event.target.closest('a, button')) return;
