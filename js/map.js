@@ -117,7 +117,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   const isMobile = window.matchMedia('(max-width: 760px)').matches;
   const popupContent = document.createElement('div');
   let activeIndex = -1;
-  popupContent.className = isMobile ? 'mobile-monk-carousel' : 'w-[230px] bg-white rounded-2xl overflow-hidden font-sans text-stone-900 select-none';
+  popupContent.className = isMobile ? 'mobile-monk-carousel' : 'place-card-wrap';
 
   if (isMobile) {
     popupContent.setAttribute('role', 'group');
@@ -148,37 +148,35 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
   } else {
     popupContent.style.touchAction = 'pan-y';
     popupContent.innerHTML = `
-      <div class="monk-popup-image relative w-full h-32 overflow-hidden bg-stone-100">
-        <img
-          src="${monk.imageUrl || `./images/monasteries/${monk.id}.jpg`}"
-          alt="${monk.monastery}"
-          class="w-full h-full object-cover"
-          onerror="this.style.display='none'"
-        />
-        <span class="absolute top-2 left-3 text-white font-serif text-xl drop-shadow">${index}</span>
-      </div>
-      <div class="monk-popup-details p-4 text-center">
-        <div class="monk-popup-title-row">
-          <img class="monk-popup-icon" src="${monk.iconUrl || `./images/icons/${monk.id}.jpg`}" alt="" />
-          <h4 class="monk-popup-title font-serif text-xl text-stone-900 leading-snug mt-1 mb-2 font-normal">
-            ${monk.monastery}
-          </h4>
+      <article class="place-card">
+        <div class="place-card-image">
+          <img
+            src="${monk.imageUrl || `./images/monasteries/${monk.id}.jpg`}"
+            alt="${monk.monastery}"
+            onerror="this.style.display='none'"
+          />
         </div>
-        <span class="monk-popup-region text-[11px] font-sans text-stone-400 block tracking-wide">
-          ${monk.region || ''}
-        </span>
-        ${monk.gmapsUrl ? `
-          <a
-            class="monk-popup-gmaps"
-            href="${monk.gmapsUrl}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span>Open in Google Maps</span>
-            <i class="icon icon-map-pin" aria-hidden="true"></i>
-          </a>
-        ` : ''}
-      </div>
+        <div class="place-card-body">
+          <div class="place-card-text">
+            <h4 class="place-card-title">${monk.monastery}</h4>
+            <span class="place-card-region">${monk.region || ''}</span>
+          </div>
+          ${monk.gmapsUrl ? `
+            <a
+              class="monk-popup-gmaps"
+              href="${monk.gmapsUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>Open in Google Maps</span>
+              <i class="icon icon-map-pin" aria-hidden="true"></i>
+            </a>
+          ` : ''}
+        </div>
+      </article>
+      <button class="place-card-close" type="button" aria-label="Close">
+        <i class="icon icon-close" aria-hidden="true"></i>
+      </button>
     `;
   }
 
@@ -348,6 +346,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
 
   if (popup) {
     currentActivePopup = popup;
+    popupContent.querySelector('.place-card-close')?.addEventListener('click', () => popup.remove());
     popup.on('close', () => {
       if (currentActivePopup !== popup) return;
       clearTimeout(scrollTimer);
