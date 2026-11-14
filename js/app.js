@@ -1,7 +1,7 @@
-import { renderCards, highlightActiveCard } from './cards.js';
+import { renderCards, highlightActiveCard } from './cards.js?v=icons-1';
 import {
   initMap, flyToMonk, showPopup, closePopup, resetMapView, setActiveMarker, selectMobileCard
-} from './map.js';
+} from './map.js?v=icons-1';
 
 let allMonksData = [];
 let selectionRevision = 0;
