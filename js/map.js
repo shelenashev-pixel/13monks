@@ -174,9 +174,9 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           ` : ''}
         </div>
       </article>
-      <button class="place-card-close" type="button" aria-label="Close">
-        <i class="icon icon-close" aria-hidden="true"></i>
-      </button>
+      <span class="place-card-close" aria-hidden="true">
+        <i class="icon icon-cross"></i>
+      </span>
     `;
   }
 
@@ -346,7 +346,6 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
 
   if (popup) {
     currentActivePopup = popup;
-    popupContent.querySelector('.place-card-close')?.addEventListener('click', () => popup.remove());
     popup.on('close', () => {
       if (currentActivePopup !== popup) return;
       clearTimeout(scrollTimer);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#e0d5c1">
+  <meta name="theme-color" content="#f5f2eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -67,6 +67,7 @@
       --control-height-m: 40px;
       --control-height-l: 48px;
       --motion-standard: cubic-bezier(.22, 1, .36, 1);
+      --ease-ui: cubic-bezier(.4, 0, .2, 1);
     }
 
     * { box-sizing: border-box; }
@@ -82,6 +83,11 @@
     button {
       box-sizing: border-box; display: inline-flex; align-items: center;
       justify-content: center; white-space: nowrap; line-height: 1;
+    }
+    button, a, [role="button"], input, .monk-card {
+      transition:
+        background-color .3s var(--ease-ui), color .3s var(--ease-ui), border-color .3s var(--ease-ui),
+        box-shadow .3s var(--ease-ui), opacity .3s var(--ease-ui), transform .3s var(--ease-ui);
     }
     button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
       outline: 2px solid #6f5636; outline-offset: 3px;
@@ -143,7 +149,6 @@
       display: inline-flex; height: var(--control-height-m); min-width: 0;
       padding: var(--space-2) var(--space-6); border: 0; border-radius: var(--radius-pill);
       background: var(--surface-inverse); color: var(--text-inverse); font: 600 14px Inter, sans-serif; cursor: pointer;
-      transition: opacity .18s var(--motion-standard);
     }
     .reset-btn:hover { background: var(--action-primary-hover); }
     .language-switch {
@@ -242,18 +247,15 @@
       }
     }
     #counter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
-    .map-pin-wrap { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+    .map-pin-wrap { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
     .map-pin {
-      display: block; width: 22px; height: 22px; border-radius: 50%;
-      background: #fff; color: var(--ink, #1a1a1a);
+      display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%;
+      background: var(--surface-base); color: var(--text-primary);
       filter: drop-shadow(0 4px 8px rgba(17,17,17,.22));
-      transition: transform .18s var(--motion-standard), background-color .18s var(--motion-standard), color .18s var(--motion-standard);
+      transition: background-color .3s var(--ease-ui), color .3s var(--ease-ui);
     }
-    .map-pin .icon { width: 100%; height: 100%; }
-    .map-pin.is-active {
-      background: #1a1a1a; color: #fff;
-      transform: scale(1.14); filter: drop-shadow(0 5px 10px rgba(167,122,67,.48));
-    }
+    .map-pin .icon { width: 24px; height: 24px; }
+    .map-pin.is-active { background: var(--surface-inverse); color: var(--text-inverse); }
     .map-pin-wrap:focus-visible {
       border-radius: 50%; outline: 2px solid #6f5636; outline-offset: 3px;
     }
@@ -262,14 +264,14 @@
       display: grid; flex: 0 0 64px; grid-template-columns: 24px 48px minmax(0,1fr);
       align-items: center; gap: var(--space-3); width: 100%; height: 64px; padding: var(--space-2) var(--space-4);
       border: 0; border-radius: 8px; background: transparent; color: var(--text-primary); cursor: pointer;
-      transition: background-color .18s var(--motion-standard);
+      cursor: pointer;
     }
-    .monk-card:hover { background: var(--surface-soft); }
+    .monk-card:hover { background: var(--surface-hover); }
     #monks-list:has(.monk-card[aria-current="true"]) .monk-card:hover { background: var(--surface-hover); }
     #monks-list .monk-card[aria-current="true"] {
       background: var(--surface-base); box-shadow: inset 0 0 0 2px var(--border-selected);
     }
-    #monks-list .monk-card[aria-current="true"]:hover { background: var(--surface-soft); }
+    #monks-list .monk-card[aria-current="true"]:hover { background: var(--surface-base); }
     .card-number { padding-top: 4px; color: var(--text-primary); font: 400 20px/24px 'Prata', Georgia, serif; text-align: center; }
     .card-icon-frame {
       position: relative; display: grid; width: 48px; height: 48px; overflow: hidden; place-items: center;
@@ -347,7 +349,7 @@
       display: inline-flex; height: var(--control-height-m); align-items: center; justify-content: center; gap: var(--space-3);
       padding: var(--space-2) var(--space-3) var(--space-2) var(--space-5); border-radius: var(--radius-pill);
       background: var(--surface-soft); color: var(--text-primary); font: 600 14px Inter, sans-serif;
-      text-decoration: none; transition: background .18s;
+      text-decoration: none;
     }
     .monk-popup-gmaps:hover { background: var(--surface-hover); }
     .modal-footer { display: none; }
@@ -375,10 +377,9 @@
     .place-card-region { color: var(--text-secondary); font: 400 14px/20px Inter, sans-serif; white-space: nowrap; }
     .place-card-close {
       display: inline-flex; width: var(--control-height-s); height: var(--control-height-s); align-items: center; justify-content: center;
-      padding: var(--space-2); border: 0; border-radius: var(--radius-pill);
-      background: var(--surface-inverse); color: var(--text-inverse); cursor: pointer;
+      border-radius: var(--radius-pill); pointer-events: none;
+      background: var(--surface-inverse); color: var(--text-inverse);
     }
-    .place-card-close:hover { background: var(--action-primary-hover); }
     .maplibregl-popup-close-button {
       z-index: 2; padding: 3px 8px; color: #fff !important; font-size: 19px;
       text-shadow: 0 1px 4px rgba(0,0,0,.8);
@@ -409,7 +410,7 @@
       .monks-panel {
         top: 88px; bottom: 16px; left: 16px; width: min(340px, calc(100vw - 32px));
         gap: var(--space-3); padding: var(--space-5) var(--space-4) var(--space-4);
-        border: 2px solid var(--surface-base); border-radius: var(--radius-s); background: var(--surface-base);
+        border: 2px solid var(--surface-soft); border-radius: var(--radius-s); background: var(--surface-soft);
         box-shadow: none;
       }
       .panel-intro { display: none; }
@@ -469,8 +470,12 @@
       .modal-side-preview-previous { left: calc(40px - 100vw); }
       .modal-side-preview-next { right: calc(40px - 100vw); }
       .map-pin-wrap { width: 40px; height: 40px; }
-      .map-pin { width: 32px; height: 32px; }
-      .map-pin.is-active { transform: scale(1.25); }
+      body::after {
+        background: linear-gradient(
+          to bottom, var(--surface-soft) 0%, rgba(245, 242, 235, 0) 36px,
+          rgba(224, 213, 193, 0) calc(100% - 36px), #e0d5c1 100%
+        );
+      }
       .app-header {
         display: grid; min-height: 136px; align-items: start; justify-content: stretch; gap: var(--space-4) var(--space-3);
         grid-template-columns: var(--control-height-m) minmax(0, 1fr) var(--control-height-m);
@@ -502,7 +507,7 @@
         z-index: 35; top: 0; right: 0; bottom: 0; left: 0; display: none;
         width: 100%; height: auto; gap: var(--space-3);
         padding: calc(var(--space-4) + env(safe-area-inset-top)) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
-        border: 0; border-radius: 0; background: var(--surface-soft);
+        border: 0; border-radius: 0; background: var(--surface-base);
         box-shadow: none;
       }
       body.mobile-list-open .monks-panel { display: flex; }
@@ -540,14 +545,14 @@
       body.map-only-view #mobile-card-overlay .mobile-monk-carousel { pointer-events: none; }
       .mobile-monk-carousel {
         display: flex; width: 100%; gap: var(--space-3); overflow-x: auto; overflow-y: visible;
-        padding: 0 calc((100% - min(82vw, 296px)) / 2);
+        padding: 0 var(--space-8);
         scroll-snap-type: x mandatory; scrollbar-width: none;
         -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; touch-action: pan-x;
         pointer-events: auto;
       }
       .mobile-monk-carousel::-webkit-scrollbar { display: none; }
       .mobile-monk-card {
-        position: relative; display: flex; flex: 0 0 min(82vw, 296px);
+        position: relative; display: flex; flex: 0 0 calc(100vw - 64px);
         height: 240px; min-height: 240px; flex-direction: column;
         overflow: hidden; border-radius: var(--radius-m); background: var(--surface-base);
         scroll-snap-align: center; scroll-snap-stop: always;
@@ -600,9 +605,9 @@
       }
       .maplibregl-ctrl-bottom-right { top: calc(50% - 105px); bottom: auto; }
       .monk-detail-modal {
-        z-index: 30; top: calc(72px + env(safe-area-inset-top)); right: var(--space-4); bottom: 0; left: var(--space-4); inset-inline: var(--space-4);
+        z-index: 30; top: 0; right: 0; bottom: 0; left: 0; inset-inline: 0;
         width: auto; max-height: none; transform: none; touch-action: pan-y;
-        border: 0; border-radius: var(--radius-s) var(--radius-s) 0 0; background: var(--surface-base);
+        border: 0; border-radius: 0; background: transparent;
       }
       .monk-detail-modal.slide-from-next {
         z-index: 32;
@@ -613,9 +618,9 @@
         animation: detail-card-enter-previous .38s var(--motion-standard) both;
       }
       .modal-transition-outgoing {
-        position: fixed; z-index: 31; top: calc(72px + env(safe-area-inset-top)); right: var(--space-4); bottom: 0; left: var(--space-4);
+        position: fixed; z-index: 31; top: 0; right: 0; bottom: 0; left: 0;
         display: flex; width: auto; flex-direction: column; overflow: hidden;
-        border: 0; border-radius: var(--radius-s) var(--radius-s) 0 0; background: var(--surface-base);
+        border: 0; border-radius: 0; background: transparent;
         pointer-events: none;
       }
       .modal-transition-outgoing.slide-to-previous {
@@ -624,7 +629,17 @@
       .modal-transition-outgoing.slide-to-next {
         animation: detail-card-exit-previous .38s var(--motion-standard) both;
       }
-      .modal-content { padding: var(--space-6) 10px var(--space-6) var(--space-4); text-align: center; touch-action: pan-y; }
+      .modal-content {
+        margin-right: 0; padding: calc(72px + env(safe-area-inset-top)) var(--space-4) 0;
+        text-align: center; touch-action: pan-y;
+      }
+      .modal-card {
+        min-height: calc(100dvh - 72px - env(safe-area-inset-top));
+        padding: var(--space-6) var(--space-4) 96px; border-radius: var(--radius-s) var(--radius-s) 0 0;
+        background: var(--surface-base);
+      }
+      body.monk-modal-open, html:has(body.monk-modal-open) { background-color: var(--surface-soft); }
+      body.monk-modal-open::after { display: none; }
       #modal-monk-desc { text-align: center; }
       .modal-close {
         position: fixed; top: calc(var(--space-4) + env(safe-area-inset-top, 0px)); left: var(--space-4);
@@ -635,14 +650,15 @@
       }
       body.monk-modal-open .app-header { display: none; }
       .modal-footer {
-        display: flex; flex: 0 0 auto; gap: var(--space-3); justify-content: center;
+        position: absolute; right: 0; bottom: 0; left: 0; z-index: 2;
+        display: flex; gap: var(--space-3); justify-content: center; pointer-events: none;
         padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
-        border-top: 0; background: var(--surface-base);
+        border-top: 0; background: linear-gradient(to top, var(--surface-base) 40%, rgba(255,255,255,0));
       }
       .modal-gmaps {
         display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: var(--space-3);
         height: var(--control-height-m); padding: var(--space-2) var(--space-3) var(--space-2) var(--space-5);
-        border: 0; border-radius: var(--radius-pill);
+        border: 0; border-radius: var(--radius-pill); pointer-events: auto;
         font: 600 14px Inter, sans-serif; text-decoration: none;
       }
       .modal-gmaps { background: var(--surface-inverse); color: var(--text-inverse); }
@@ -692,7 +708,7 @@
     </aside>
   </main>
 
-  <script type="module" src="js/app.js?v=figma-sync-1"></script>
+  <script type="module" src="js/app.js?v=figma-sync-2"></script>
 
   <div id="detail-overlay" class="detail-overlay hidden">
     <button id="close-modal-btn" class="modal-close" type="button" aria-label="Close">
@@ -702,6 +718,7 @@
     <div class="modal-side-preview modal-side-preview-next" aria-hidden="true"></div>
     <section id="monk-detail-modal" class="monk-detail-modal hidden" aria-modal="true" role="dialog" aria-labelledby="modal-monk-name">
       <div class="modal-content">
+        <div class="modal-card">
         <span id="modal-monk-index">2</span>
         <h2 id="modal-monk-name">Anton of Martqopi</h2>
         <div id="modal-icon-frame" class="modal-icon-frame">
@@ -709,6 +726,7 @@
           <i class="icon icon-cross modal-icon-fallback" aria-hidden="true"></i>
         </div>
         <div id="modal-monk-desc"></div>
+        </div>
       </div>
       <div class="desktop-detail-nav" aria-label="Browse monks">
         <button id="detail-prev" type="button" aria-label="Previous monk"><i class="icon icon-arrow-left" aria-hidden="true"></i></button>

@@ -1,7 +1,7 @@
-import { renderCards, highlightActiveCard } from './cards.js?v=figma-sync-1';
+import { renderCards, highlightActiveCard } from './cards.js?v=figma-sync-2';
 import {
   initMap, flyToMonk, showPopup, closePopup, resetMapView, setActiveMarker, selectMobileCard
-} from './map.js?v=figma-sync-1';
+} from './map.js?v=figma-sync-2';
 
 let allMonksData = [];
 let selectionRevision = 0;
@@ -310,6 +310,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderFilteredCards();
   monkList?.setAttribute('aria-busy', 'false');
   if (window.matchMedia('(max-width: 760px)').matches && allMonksData[0]?.coordinates) {
+    activeMonkId = allMonksData[0].id;
+    setActiveMarker(allMonksData[0]);
     showPopup(
       allMonksData[0],
       () => {
