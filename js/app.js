@@ -1,7 +1,7 @@
 import { renderCards, highlightActiveCard } from './cards.js?v=figma-sync-2';
 import {
   initMap, flyToMonk, showPopup, closePopup, resetMapView, setActiveMarker, selectMobileCard
-} from './map.js?v=figma-sync-4';
+} from './map.js?v=figma-sync-5';
 
 let allMonksData = [];
 let selectionRevision = 0;
@@ -326,6 +326,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       },
       allMonksData
     );
+    flyToMonk(allMonksData[0]);
   }
 
   // Кнопка закрытия модального окна
