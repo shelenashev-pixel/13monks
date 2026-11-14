@@ -181,6 +181,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
     ? null
     : new maplibregl.Popup({
       offset: 28,
+      anchor: 'bottom',
       closeButton: true,
       closeOnClick: false,
       className: 'custom-monk-popup'

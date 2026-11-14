@@ -1,7 +1,7 @@
 import { renderCards, highlightActiveCard } from './cards.js?v=figma-sync-2';
 import {
   initMap, flyToMonk, showPopup, closePopup, resetMapView, setActiveMarker, selectMobileCard
-} from './map.js?v=figma-sync-3';
+} from './map.js?v=figma-sync-4';
 
 let allMonksData = [];
 let selectionRevision = 0;
