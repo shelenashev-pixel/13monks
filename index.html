@@ -90,7 +90,9 @@
     .icon-map-pin { --icon: url('./images/ui-icons/map-pin.svg'); }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #c9c6bd; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb { background: transparent; border-radius: 9999px; }
+    #monks-list:hover::-webkit-scrollbar-thumb,
+    .modal-content:hover::-webkit-scrollbar-thumb { background: #c9c6bd; }
 
     #map {
       position: absolute !important;
