@@ -5,8 +5,6 @@ let currentMobileCardOverlay = null;
 let currentMobileCardOnClose = null;
 let currentMobileCardCleanup = null;
 let currentMobileCardSelect = null;
-const mapPinIcon = './images/ui-icons/cross-selected-off.svg';
-const activeMapPinIcon = './images/ui-icons/cross-selected-on.svg';
 
 export function initMap(monks, onMarkerClick) {
   mapInstance = new maplibregl.Map({
@@ -35,10 +33,9 @@ export function initMap(monks, onMarkerClick) {
     el.setAttribute('role', 'button');
     el.setAttribute('tabindex', '0');
     el.setAttribute('aria-pressed', 'false');
-    const markerIcon = document.createElement('img');
+    const markerIcon = document.createElement('span');
     markerIcon.className = 'map-pin';
-    markerIcon.src = mapPinIcon;
-    markerIcon.alt = '';
+    markerIcon.innerHTML = '<i class="icon icon-cross" aria-hidden="true"></i>';
     el.appendChild(markerIcon);
 
     const marker = new maplibregl.Marker({ element: el })
@@ -106,7 +103,6 @@ export function setActiveMarker(monk) {
     marker.getElement().classList.toggle('is-active', isActive);
     if (markerIcon) {
       markerIcon.classList.toggle('is-active', isActive);
-      markerIcon.src = isActive ? activeMapPinIcon : mapPinIcon;
     }
     marker.getElement().setAttribute('aria-pressed', String(isActive));
   });
@@ -134,10 +130,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           <span class="mobile-card-number">${itemIndex + 1}</span>
           ${item.gmapsUrl ? `
             <a class="mobile-card-location" href="${item.gmapsUrl}" target="_blank" rel="noopener noreferrer" aria-label="Open ${item.monastery} in Google Maps">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
-                <circle cx="12" cy="10" r="2.5"></circle>
-              </svg>
+              <i class="icon icon-map-pin" aria-hidden="true"></i>
             </a>
           ` : ''}
         </div>
@@ -182,9 +175,7 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
             rel="noopener noreferrer"
           >
             <span>Open in Google Maps</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 3h7v7M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            </svg>
+            <i class="icon icon-map-pin" aria-hidden="true"></i>
           </a>
         ` : ''}
       </div>

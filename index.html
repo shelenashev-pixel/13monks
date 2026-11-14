@@ -76,9 +76,18 @@
     button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
       outline: 2px solid #6f5636; outline-offset: 3px;
     }
-    svg {
-      flex-shrink: 0; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    /* Single source: edit/re-export images/ui-icons/<name>.svg and every icon updates. */
+    .icon {
+      display: inline-block; flex-shrink: 0; width: 24px; height: 24px; background-color: currentColor;
+      -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
     }
+    .icon-menu { --icon: url('./images/ui-icons/menu.svg'); }
+    .icon-close { --icon: url('./images/ui-icons/close.svg'); }
+    .icon-search { --icon: url('./images/ui-icons/search.svg'); }
+    .icon-arrow-left { --icon: url('./images/ui-icons/arrow-left.svg'); }
+    .icon-arrow-right { --icon: url('./images/ui-icons/arrow-right.svg'); }
+    .icon-cross { --icon: url('./images/ui-icons/cross.svg'); }
+    .icon-map-pin { --icon: url('./images/ui-icons/map-pin.svg'); }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #c9c6bd; border-radius: 9999px; }
@@ -155,7 +164,7 @@
       height: var(--control-height-m);
     }
     .search-icon {
-      position: absolute; top: 10px; left: 16px; width: 20px; height: 20px;
+      position: absolute; top: 8px; left: 14px;
       color: #111; pointer-events: none;
     }
     #search-input {
@@ -224,11 +233,14 @@
     #counter { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
     .map-pin-wrap { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
     .map-pin {
-      display: block; width: 22px; height: 22px; object-fit: contain;
+      display: block; width: 22px; height: 22px; border-radius: 50%;
+      background: #fff; color: var(--ink, #1a1a1a);
       filter: drop-shadow(0 4px 8px rgba(17,17,17,.22));
-      transition: transform .18s var(--motion-standard), opacity .18s var(--motion-standard);
+      transition: transform .18s var(--motion-standard), background-color .18s var(--motion-standard), color .18s var(--motion-standard);
     }
+    .map-pin .icon { width: 100%; height: 100%; }
     .map-pin.is-active {
+      background: #1a1a1a; color: #fff;
       transform: scale(1.14); filter: drop-shadow(0 5px 10px rgba(167,122,67,.48));
     }
     .map-pin-wrap:focus-visible {
@@ -256,7 +268,11 @@
       position: relative; display: grid; width: 44px; height: 44px; overflow: hidden; place-items: center;
       border-radius: 50%; background: #e8e6e0; color: #8a8882;
     }
-    .card-icon-frame::after { position: absolute; content: '✝'; font-size: 20px; }
+    .card-icon-frame::after {
+      position: absolute; content: ''; width: 24px; height: 24px; background-color: currentColor;
+      -webkit-mask: url('./images/ui-icons/cross.svg') center / contain no-repeat;
+      mask: url('./images/ui-icons/cross.svg') center / contain no-repeat;
+    }
     .card-icon-frame img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
     .card-copy { min-width: 0; text-align: center; }
     .card-copy h3 {
@@ -309,9 +325,9 @@
       border-radius: 50%; background: #eeece8; box-shadow: 0 10px 18px rgba(16,16,16,.08);
     }
     .modal-icon { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .modal-icon-fallback { display: none; color: #777; font: 400 42px/1 'Prata', Georgia, serif; }
+    .modal-icon-fallback { display: none; width: 42px; height: 42px; color: #777; }
     .modal-icon-frame.is-missing .modal-icon { display: none; }
-    .modal-icon-frame.is-missing .modal-icon-fallback { display: grid; }
+    .modal-icon-frame.is-missing .modal-icon-fallback { display: block; }
     #modal-monk-desc { margin: 0; color: #777; font: 13px/1.5 Inter, sans-serif; text-align: left; }
     #modal-monk-desc section { text-align: left; }
     #modal-monk-desc section + section { margin-top: 20px; }
@@ -393,7 +409,8 @@
       .desktop-detail-nav button {
         display: inline-flex; width: var(--control-height-m); height: var(--control-height-m);
         border: 0; border-radius: 50%; background: #f5f2eb; color: #171717;
-        font: 400 24px/1 Inter, sans-serif; cursor: pointer; pointer-events: auto;
+        align-items: center; justify-content: center; padding: 0;
+        cursor: pointer; pointer-events: auto;
       }
       .desktop-detail-nav button:hover { background: #e9e2d6; }
       #modal-monk-index { margin-bottom: 16px; }
@@ -474,7 +491,7 @@
         padding: 0; border: 0; border-radius: 50%; background: white;
         color: #111; box-shadow: 0 2px 10px rgba(0,0,0,.12); cursor: pointer;
       }
-      .mobile-list-toggle svg { width: 24px; height: 24px; }
+      .mobile-list-toggle { align-items: center; justify-content: center; }
       .monks-panel {
         z-index: 35; top: 0; right: 0; bottom: 0; left: 0; display: none;
         width: 100%; height: auto; gap: 12px;
@@ -491,7 +508,6 @@
         place-items: center; padding: 0; border: 0; border-radius: 50%;
         background: white; color: #171717; box-shadow: 0 2px 10px rgba(0,0,0,.08); cursor: pointer;
       }
-      .mobile-list-close svg { width: 24px; height: 24px; }
       .panel-intro {
         flex: 0 0 auto; align-self: center; justify-content: center;
         width: min(300px, 100%); min-height: 56px; margin: 14px 0 8px; padding: 0 28px;
@@ -503,7 +519,7 @@
         color: #777; font: 12px Inter, sans-serif; text-decoration: underline; cursor: pointer;
       }
       .search-wrap { flex-basis: var(--control-height-m); }
-      .search-icon { top: 9px; left: 13px; width: 19px; height: 19px; }
+      .search-icon { top: 8px; left: 12px; }
       #search-input { padding-left: 40px; font-size: 13px; }
       #monks-list { gap: 3px; padding-bottom: env(safe-area-inset-bottom); }
       .monk-card {
@@ -557,7 +573,6 @@
         display: grid; width: var(--control-height-m); height: var(--control-height-m); place-items: center;
         border-radius: 32px; background: var(--surface-soft); color: #171717;
       }
-      .mobile-card-location svg { width: 21px; height: 21px; }
       .mobile-card-icon {
         position: absolute; z-index: 1; top: 80px; left: 50%;
         width: 56px; height: 56px;
@@ -670,9 +685,7 @@
         <span>🇬🇧</span><span>🇬🇪</span><span>🇷🇺</span>
       </div>
       <button id="mobile-list-toggle" class="mobile-list-toggle" type="button" aria-label="Open monastery list" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
+        <i class="icon icon-menu" aria-hidden="true"></i>
       </button>
     </div>
   </header>
@@ -680,16 +693,12 @@
   <main class="main-layout">
     <aside class="monks-panel" aria-label="Monastery list">
       <button id="mobile-list-close" class="mobile-list-close" type="button" aria-label="Close monastery list">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="m18 6-12 12M6 6l12 12"></path>
-        </svg>
+        <i class="icon icon-close" aria-hidden="true"></i>
       </button>
       <h2 class="panel-intro">13 Assyrian fathers in Georgia</h2>
       <button id="mobile-reset-btn" class="mobile-reset-btn" type="button">Reset map</button>
       <label class="search-wrap">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
-        </svg>
+        <i class="icon icon-search search-icon" aria-hidden="true"></i>
         <input id="search-input" type="search" placeholder="Search" aria-label="Search by monk, monastery, or region">
       </label>
       <span id="counter" aria-live="polite">0 monasteries</span>
@@ -706,9 +715,7 @@
 
   <div id="detail-overlay" class="detail-overlay hidden">
     <button id="close-modal-btn" class="modal-close" type="button" aria-label="Close">
-      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-        <path d="m18 6-12 12M6 6l12 12"></path>
-      </svg>
+      <i class="icon icon-close" aria-hidden="true"></i>
     </button>
     <div class="modal-side-preview modal-side-preview-previous" aria-hidden="true"></div>
     <div class="modal-side-preview modal-side-preview-next" aria-hidden="true"></div>
@@ -718,20 +725,18 @@
         <h2 id="modal-monk-name">Anton of Martqopi</h2>
         <div id="modal-icon-frame" class="modal-icon-frame">
           <img id="modal-monk-icon" class="modal-icon" src="" alt="">
-          <span class="modal-icon-fallback" aria-hidden="true">✝</span>
+          <i class="icon icon-cross modal-icon-fallback" aria-hidden="true"></i>
         </div>
         <div id="modal-monk-desc"></div>
       </div>
       <div class="desktop-detail-nav" aria-label="Browse monks">
-        <button id="detail-prev" type="button" aria-label="Previous monk">‹</button>
-        <button id="detail-next" type="button" aria-label="Next monk">›</button>
+        <button id="detail-prev" type="button" aria-label="Previous monk"><i class="icon icon-arrow-left" aria-hidden="true"></i></button>
+        <button id="detail-next" type="button" aria-label="Next monk"><i class="icon icon-arrow-right" aria-hidden="true"></i></button>
       </div>
       <div class="modal-footer">
         <a id="modal-monk-gmaps" class="modal-gmaps" href="#" target="_blank" rel="noopener noreferrer">
           <span>Open in Google Maps</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M14 3h7v7M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-          </svg>
+          <i class="icon icon-map-pin" aria-hidden="true"></i>
         </a>
       </div>
     </section>
