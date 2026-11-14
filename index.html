@@ -89,6 +89,8 @@
         background-color .3s var(--ease-ui), color .3s var(--ease-ui), border-color .3s var(--ease-ui),
         box-shadow .3s var(--ease-ui), opacity .3s var(--ease-ui), transform .3s var(--ease-ui);
     }
+    /* MapLibre positions markers via transform; animating it makes pins lag behind the map. */
+    .map-pin-wrap { transition: none; }
     button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focus-visible {
       outline: 2px solid #6f5636; outline-offset: 3px;
     }

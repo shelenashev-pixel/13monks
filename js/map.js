@@ -174,16 +174,13 @@ export function showPopup(monk, onClose, onRead, index, onSwipe, monks = [monk])
           ` : ''}
         </div>
       </article>
-      <span class="place-card-close" aria-hidden="true">
-        <i class="icon icon-cross"></i>
-      </span>
     `;
   }
 
   const popup = isMobile
     ? null
     : new maplibregl.Popup({
-      offset: 40,
+      offset: 28,
       closeButton: true,
       closeOnClick: false,
       className: 'custom-monk-popup'
